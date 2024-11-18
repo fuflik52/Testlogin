@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Приключенческая Игра</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Статус бар -->
+    <div class="status-bar">
+        <div class="status-item">
+            <svg class="status-icon" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M12 2L15 8L21 9L16.5 13.5L18 20L12 17L6 20L7.5 13.5L3 9L9 8L12 2Z" 
+                      fill="none" stroke="#ffd700" stroke-width="2"/>
+            </svg>
+            <span class="status-text" id="questStatus">Активные квесты: 0</span>
+        </div>
+        
+        <div class="status-item">
+            <svg class="status-icon" width="24" height="24" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" 
+                      fill="none" stroke="#ffd700" stroke-width="2"/>
+            </svg>
+            <span class="status-text" id="livesDisplay">Жизни: 3</span>
+        </div>
+        
+        <div class="inventory-hint">Нажмите I для инвентаря</div>
+    </div>
+    
+    <!-- Инвентарный индикатор -->
+    <div id="inventoryIndicator">👜</div>
+    
+    <!-- Контейнер игры -->
+    <div id="gameContainer">
+        <div id="game">
+            <!-- Персонаж -->
+            <div class="player"></div>
+            
+            <!-- Платформы -->
+            <!-- Платформы будут созданы динамически через JavaScript -->
+            
+            <!-- NPC -->
+            <!-- NPC будут созданы динамически через JavaScript -->
+            
+            <!-- Предметы -->
+            <!-- Предметы будут созданы динамически через JavaScript -->
+        </div>
+        
+        <!-- Оверлей для запуска игры -->
+        <div id="startOverlay">
+            <div class="overlay-content">
+                <h1>Добро пожаловать в Приключенческую Игру!</h1>
+                <p>Нажмите <strong>Пробел</strong>, чтобы начать.</p>
+            </div>
+        </div>
+        
+        <!-- Отображение нажатых клавиш -->
+        <div id="keyDisplay">
+            Нажаты клавиши: <span id="pressedKeys">Ничего</span>
+        </div>
+
+        <!-- Подсказка для взаимодействия с NPC -->
+        <div id="interactionHint" class="hidden">
+            Нажмите <strong>E</strong> для взаимодействия
+        </div>
+
+        <!-- Диалоговое окно для NPC -->
+        <div id="dialogBox" class="hidden">
+            <div class="dialog-content">
+                <p id="dialogText"></p>
+                <div class="dialog-buttons">
+                    <button id="acceptQuest">Принять</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Инвентарь -->
+        <div class="inventory" id="inventory">
+            <div class="close-button" id="closeInventory">×</div>
+            <div class="inventory-grid">
+                <div class="inventory-slot">
+                    <div class="item" draggable="true" data-count="5">
+                        <svg viewBox="0 0 24 24" fill="#ffd700">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                        <div class="item-count">5</div>
+                    </div>
+                </div>
+                <div class="inventory-slot">
+                    <div class="item" draggable="true" data-count="3">
+                        <svg viewBox="0 0 24 24" fill="#c0392b">
+                            <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
+                        </svg>
+                        <div class="item-count">3</div>
+                    </div>
+                </div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+                <div class="inventory-slot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Контекстное меню для инвентаря -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-option" id="splitOption">Разделить</div>
+        <div class="context-menu-option" id="dropOption">Выбросить</div>
+    </div>
+
+    <!-- Диалоговое окно для разделения стека -->
+    <div class="split-dialog" id="splitDialog">
+        <div>Количество:</div>
+        <input type="number" id="splitAmount" min="1">
+        <button id="confirmSplit">OK</button>
+        <button id="cancelSplit">Отмена</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
