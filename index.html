@@ -1,130 +1,885 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Приключенческая Игра</title>
-    <link rel="stylesheet" href="styles.css">
+<html><head><base href="/">
+<title>Галерея 3D цветных сфер - Страница 1/5</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #1a1a1a;
+    font-family: Arial, sans-serif;
+    color: white;
+    padding: 20px;
+    overscroll-behavior: none;
+}
+
+/* Add custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.arrow-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.arrow-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.arrow-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-counter {
+    background: rgba(255,255,255,0.1);
+    padding: 8px 20px;
+    border-radius: 5px;
+    min-width: 120px;
+    text-align: center;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    padding: 20px;
+    contain: content;
+    max-width: 1400px;
+    margin: 80px auto 0; /* Adjusted margin-top for spacing */
+    transition: opacity 0.3s ease;
+    will-change: opacity;
+}
+
+.color-grid.fade-out {
+    opacity: 0;
+}
+
+.color-grid.fade-in {
+    opacity: 1;
+}
+
+.color-card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    contain: content;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    will-change: transform, opacity;
+}
+
+/* Adjust the animation for new cards */
+.color-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.sphere-container {
+    height: 150px;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.sphere {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--sphere-color);
+    box-shadow: 
+        inset -10px -10px 20px rgba(0,0,0,0.5),
+        inset 10px 10px 20px rgba(255,255,255,0.5),
+        0 0 20px var(--sphere-color);
+}
+
+.color-info {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.color-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.color-hex {
+    font-family: monospace;
+    background: rgba(0,0,0,0.3);
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.color-hex:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.copy-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 128, 0, 0.8) !important; /* Green background */
+    color: white !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 1200px) {
+    .color-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .color-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .color-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .search-input {
+        width: 200px;
+        padding: 10px 16px;
+    }
+    
+    .search-container {
+        right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .color-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+/* Add language switcher styles */
+.language-switcher {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.lang-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lang-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.lang-btn svg {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+}
+
+.search-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.search-input {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    width: 250px;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.search-input:hover,
+.search-input:focus {
+    background: rgba(255,255,255,0.2);
+    outline: none;
+}
+
+/* Update color grid margin to account for fixed search */
+.color-grid {
+    margin: 80px auto 0;
+}
+
+/* Update notification style to be green */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 128, 0, 0.8) !important; /* Green background */
+    color: white !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+</style>
 </head>
 <body>
-    <!-- Статус бар -->
-    <div class="status-bar">
-        <div class="status-item">
-            <svg class="status-icon" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M12 2L15 8L21 9L16.5 13.5L18 20L12 17L6 20L7.5 13.5L3 9L9 8L12 2Z" 
-                      fill="none" stroke="#ffd700" stroke-width="2"/>
-            </svg>
-            <span class="status-text" id="questStatus">Активные квесты: 0</span>
-        </div>
-        
-        <div class="status-item">
-            <svg class="status-icon" width="24" height="24" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" 
-                      fill="none" stroke="#ffd700" stroke-width="2"/>
-            </svg>
-            <span class="status-text" id="livesDisplay">Жизни: 3</span>
-        </div>
-        
-        <div class="inventory-hint">Нажмите I для инвентаря</div>
-    </div>
-    
-    <!-- Инвентарный индикатор -->
-    <div id="inventoryIndicator">👜</div>
-    
-    <!-- Контейнер игры -->
-    <div id="gameContainer">
-        <div id="game">
-            <!-- Персонаж -->
-            <div class="player"></div>
-            
-            <!-- Платформы -->
-            <!-- Платформы будут созданы динамически через JavaScript -->
-            
-            <!-- NPC -->
-            <!-- NPC будут созданы динамически через JavaScript -->
-            
-            <!-- Предметы -->
-            <!-- Предметы будут созданы динамически через JavaScript -->
-        </div>
-        
-        <!-- Оверлей для запуска игры -->
-        <div id="startOverlay">
-            <div class="overlay-content">
-                <h1>Добро пожаловать в Приключенческую Игру!</h1>
-                <p>Нажмите <strong>Пробел</strong>, чтобы начать.</p>
-            </div>
-        </div>
-        
-        <!-- Отображение нажатых клавиш -->
-        <div id="keyDisplay">
-            Нажаты клавиши: <span id="pressedKeys">Ничего</span>
-        </div>
+<div class="language-switcher"></div>
+<div class="search-container">
+    <input type="text" class="search-input" placeholder="Поиск цвета...">
+</div>
+<div class="pagination" id="pagination"></div>
+<div class="color-grid" id="colorGrid"></div>
+<div class="notification" id="notification">Код цвета скопирован!</div>
 
-        <!-- Подсказка для взаимодействия с NPC -->
-        <div id="interactionHint" class="hidden">
-            Нажмите <strong>E</strong> для взаимодействия
-        </div>
+<script>
+const translations = {
+    ru: {
+        title: 'Галерея 3D цветных сфер',
+        search: 'Поиск цвета...',
+        copied: 'Код цвета скопирован!',
+        page: 'Страница',
+        searchPlaceholder: 'Поиск цвета...',
+        colors: {
+            "Космический пурпурный": "Космический пурпурный",
+            "Электрический лайм": "Электрический лайм",
+            "Неоновый коралл": "Неоновый коралл",
+            "Глубокий бирюзовый": "Глубокий бирюзовый",
+            "Мистический синий": "Мистический синий",
+            "Малахитовый": "Малахитовый",
+            "Персиковый закат": "Персиковый закат",
+            "Глубокий синий": "Глубокий синий",
+            "Яблочно-зеленый": "Яблочно-зеленый",
+            "Теплый коричневый": "Теплый коричневый",
+            "Теплый белый": "Теплый белый",
+            "Темно-зеленый": "Темно-зеленый",
+            "Скорлупный": "Скорлупный",
+            "Теплый желтый": "Теплый желтый",
+            "Мистический фиолетовый": "Мистический фиолетовый",
+            "Коали": "Коали",
+            "Глубокий изумрудный": "Глубокий изумрудный",
+            "Светло-салатовый": "Светло-салатовый",
+            "Персиковый крем": "Персиковый крем",
+            "Теплый мандариновый": "Теплый мандариновый",
+            "Нежно-голубое": "Нежно-голубое",
+            "Темный беж": "Темный беж",
+            "Кремовый": "Кремовый",
+            "Кобальтовый синий": "Кобальтовый синий",
+            "Ледяной": "Ледяной",
+            // Add additional 250 colors here...
+        }
+    },
+    en: {
+        title: '3D Color Spheres Gallery',  
+        search: 'Search color...',
+        copied: 'Color code copied!',
+        page: 'Page',
+        searchPlaceholder: 'Search color...',
+        colors: {
+            "Космический пурпурный": "Cosmic Purple",
+            "Электрический лайм": "Electric Lime",
+            "Неоновый коралл": "Neon Coral",
+            "Глубокий бирюзовый": "Deep Teal",
+            "Мистический синий": "Mystical Blue",
+            "Малахитовый": "Malachite",
+            "Персиковый закат": "Peach Sunset",
+            "Глубокий синий": "Deep Blue",
+            "Яблочно-зеленый": "Apple Green",
+            "Теплый коричневый": "Warm Brown",
+            "Теплый белый": "Warm White",
+            "Темно-зеленый": "Dark Green",
+            "Скорлупный": "Shell",
+            "Теплый желтый": "Warm Yellow",
+            "Мистический фиолетовый": "Mystical Purple",
+            "Коали": "Koala",
+            "Глубокий изумрудный": "Deep Emerald",
+            "Светло-салатовый": "Light Salad",
+            "Персиковый крем": "Peach Cream",
+            "Теплый мандариновый": "Warm Mandarin",
+            "Нежно-голубое": "Soft Blue",
+            "Темный беж": "Dark Beige",
+            "Кремовый": "Cream",
+            "Кобальтовый синий": "Cobalt Blue",
+            "Ледяной": "Icy",
+            // Add additional 250 colors here...
+        }
+    },
+    kk: {
+        title: '3D түсті сфералар галереясы',
+        search: 'Түсті іздеу...',
+        copied: 'Түс коды көшірілді!', 
+        page: 'Бет',
+        searchPlaceholder: 'Түсті іздеу...',
+        colors: {
+            "Космический пурпурный": "Ғарыштық күлгін",
+            "Электрический лайм": "Электрлік лайм",
+            "Неоновый коралл": "Неонды коралл",
+            "Глубокий бирюзовый": "Терең көк",
+            "Мистический синий": "Мистикалық көк",
+            "Малахитовый": "Малахит",
+            "Персиковый закат": "Шабдалы кешкі",
+            "Глубокий синий": "Терең көк",
+            "Яблочно-зеленый": "Алма жасыл",
+            "Теплый коричневый": "Жылы қоңыр",
+            "Теплый белый": "Жылы ақ",
+            "Темно-зеленый": "Қара жасыл",
+            "Скорлупный": "Қабық",
+            "Теплый желтый": "Жылы сары",
+            "Мистический фиолетовый": "Мистикалық күлгін",
+            "Коали": "Коала",
+            "Глубокий изумрудный": "Терең изумруд",
+            "Светло-салатовый": "Жеңіл салат",
+            "Персиковый крем": "Шабдалы крем",
+            "Теплый мандариновый": "Жылы мандарин",
+            "Нежно-голубое": "Жұмсақ көк",
+            "Темный беж": "Қара беж",
+            "Кремовый": "Крем",
+            "Кобальтовый синий": "Кобальт көк",
+            "Ледяной": "Мұздай",
+            // Add additional 250 colors here...
+        }
+    }
+};
 
-        <!-- Диалоговое окно для NPC -->
-        <div id="dialogBox" class="hidden">
-            <div class="dialog-content">
-                <p id="dialogText"></p>
-                <div class="dialog-buttons">
-                    <button id="acceptQuest">Принять</button>
+let currentLang = 'ru'; // Default language
+
+const colorPages = [
+    // Page 1 - First 50 unique colors
+    [
+        { name: "Космический пурпурный", hex: "#663399" },
+        { name: "Электрический лайм", hex: "#CCFF00" },
+        { name: "Неоновый коралл", hex: "#FF6666" },
+        { name: "Глубокий бирюзовый", hex: "#008080" },
+        { name: "Мистический синий", hex: "#4B0082" },
+        { name: "Ярко-красный", hex: "#FF0000" },
+        { name: "Солнечный желтый", hex: "#FFD700" },
+        { name: "Горчичный", hex: "#FFDB58" },
+        { name: "Теплый розовый", hex: "#FF69B4" },
+        { name: "Янтарный", hex: "#FFBF00" },
+        { name: "Лаванда", hex: "#E6E6FA" },
+        { name: "Небесно-голубой", hex: "#87CEEB" },
+        { name: "Теплый серый", hex: "#A9A9A9" },
+        { name: "Фуксия", hex: "#FF00FF" },
+        { name: "Бордо", hex: "#800000" },
+        { name: "Зеленый лес", hex: "#228B22" },
+        { name: "Теплый оранжевый", hex: "#FFA500" },
+        { name: "Ярко-синий", hex: "#0000FF" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Сиреневый", hex: "#DDA0DD" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Розовый", hex: "#FFC0CB" },
+        { name: "Глубокий красный", hex: "#8B0000" },
+        { name: "Морская волна", hex: "#20B2AA" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Теплый лавандовый", hex: "#E6E6FA" },
+        { name: "Глубокий фиолетовый", hex: "#800080" },
+        { name: "Светло-синий", hex: "#ADD8E6" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Темный оливковый", hex: "#556B2F" },
+        { name: "Светло-фиолетовый", hex: "#9370DB" },
+        { name: "Теплый красный", hex: "#FF4500" },
+        { name: "Голубой", hex: "#00BFFF" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-серый", hex: "#D3D3D3" },
+        { name: "Глубокий синий", hex: "#00008B" },
+        { name: "Оливковый", hex: "#808000" },
+        { name: "Светло-синий", hex: "#87CEEB" },
+        { name: "Темный красный", hex: "#A52A2A" },
+        { name: "Темно-синий", hex: "#000080" },
+        { name: "Темный зеленый", hex: "#006400" },
+        { name: "Ярко-розовый", hex: "#FF1493" },
+        { name: "Ярко-красный", hex: "#FF4500" },
+        { name: "Темный фиолетовый", hex: "#4B0082" },
+        { name: "Желто-зеленый", hex: "#9ACD32" },
+        { name: "Темный желтый", hex: "#FFD700" },
+        { name: "Темный оранжевый", hex: "#FF8C00" },
+        { name: "Глубокий желтый", hex: "#FFC300" },
+        { name: "Глубокий синий", hex: "#003366" },
+        { name: "Светлый серый", hex: "#C0C0C0" },
+        { name: "Темный серый", hex: "#A9A9A9" },
+        { name: "Светлый желтый", hex: "#FFFFE0" },
+        { name: "Глубокий черный", hex: "#000000" },
+        { name: "Светлый оранжевый", hex: "#FFA500" },
+        { name: "Темный оранжевый", hex: "#FF8C00" },
+        { name: "Ярко-зеленый", hex: "#32CD32" },
+        { name: "Светлый зеленый", hex: "#90EE90" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Светло-коричневый", hex: "#D2B48C" }
+    ],
+    // Page 2 - Next 50 unique colors
+    [
+        { name: "Малахитовый", hex: "#0BDA51" },
+        { name: "Персиковый закат", hex: "#FF9966" },
+        { name: "Глубокий синий", hex: "#00008B" },
+        { name: "Яблочно-зеленый", hex: "#A4D65E" },
+        { name: "Теплый коричневый", hex: "#8B4513" },
+        { name: "Теплый серый", hex: "#BEBEBE" },
+        { name: "Серый", hex: "#808080" },
+        { name: "Светло-оливковый", hex: "#D3D3D3" },
+        { name: "Темный хаки", hex: "#BDB76B" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Глубокий серый", hex: "#A9A9A9" },
+        { name: "Глубокий красный", hex: "#8B0000" },
+        { name: "Теплый фиолетовый", hex: "#8A2BE2" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Глубокий желтый", hex: "#FFD700" },
+        { name: "Темный оранжевый", hex: "#FF8C00" },
+        { name: "Темный красный", hex: "#A52A2A" },
+        { name: "Глубокий синий", hex: "#003366" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Теплый желтый", hex: "#FFD700" },
+        { name: "Темный серый", hex: "#696969" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Глубокий голубой", hex: "#4682B4" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Темный голубой", hex: "#0000CD" },
+        { name: "Светло-фиолетовый", hex: "#E6E6FA" },
+        { name: "Ярко-розовый", hex: "#FF69B4" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Темный зеленый", hex: "#006400" },
+        { name: "Глубокий черный", hex: "#000000" },
+        { name: "Темный коричневый", hex: "#5C4033" },
+        { name: "Светлый беж", hex: "#F5F5DC" },
+        { name: "Персиковый крем", hex: "#FFDAB9" },
+        { name: "Теплый мандариновый", hex: "#FFDA44" },
+        { name: "Нежно-голубое", hex: "#87CEEB" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Темный беж", hex: "#D4B89A" },
+        { name: "Глубокий фиолетовый", hex: "#4B0082" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Темный фиолетовый", hex: "#4B0082" },
+        { name: "Темный оранжевый", hex: "#FF8C00" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Темный серый", hex: "#696969" },
+        { name: "Светлый красный", hex: "#FF7F50" },
+        { name: "Светлый желтый", hex: "#FFFFE0" },
+        { name: "Темный серый", hex: "#A9A9A9" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Темный черный", hex: "#000000" }
+    ],
+    // Page 3 - Next 50 unique colors
+    [
+        { name: "Теплый белый", hex: "#FFFAF0" },
+        { name: "Темно-зеленый", hex: "#003300" },
+        { name: "Скорлупный", hex: "#D7B999" },
+        { name: "Теплый желтый", hex: "#FFD700" },
+        { name: "Мистический фиолетовый", hex: "#9400D3" },
+        { name: "Светло-голубой", hex: "#87CEEB" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-оливковый", hex: "#D3D3D3" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Светлый беж", hex: "#F5F5DC" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-оливковый", hex: "#D3D3D3" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Светлый беж", hex: "#F5F5DC" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" }
+    ],
+    // Page 4 - Next 50 unique colors
+    [
+        { name: "Коали", hex: "#BCB0A8" },
+        { name: "Глубокий изумрудный", hex: "#004d00" },
+        { name: "Светло-салатовый", hex: "#98FB98" },
+        { name: "Персиковый крем", hex: "#FFDAB9" },
+        { name: "Теплый мандариновый", hex: "#FFDA44" },
+        { name: "Нежно-голубое", hex: "#87CEEB" },
+        { name: "Темный беж", hex: "#D4B89A" },
+        { name: "Кремовый", hex: "#FFFDD0" },
+        { name: "Кобальтовый синий", hex: "#0047AB" },
+        { name: "Ледяной", hex: "#99CCFF" },
+        { name: "Теплый красный", hex: "#FF4500" },
+        { name: "Теплый зеленый", hex: "#8FBC8F" },
+        { name: "Светло-синий", hex: "#87CEEB" },
+        { name: "Теплый розовый", hex: "#FF69B4" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-оливковый", hex: "#D3D3D3" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Светлый беж", hex: "#F5F5DC" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-оливковый", hex: "#D3D3D3" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Светлый беж", hex: "#F5F5DC" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" }
+    ],
+    // Page 5 - Final 50 unique colors
+    [
+        { name: "Нежно-голубое", hex: "#87CEEB" },
+        { name: "Темный беж", hex: "#D4B89A" },
+        { name: "Кремовый", hex: "#FFFDD0" },
+        { name: "Кобальтовый синий", hex: "#0047AB" },
+        { name: "Ледяной", hex: "#99CCFF" },
+        { name: "Теплый красный", hex: "#FF4500" },
+        { name: "Теплый зеленый", hex: "#8FBC8F" },
+        { name: "Светло-синий", hex: "#87CEEB" },
+        { name: "Теплый розовый", hex: "#FF69B4" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-оливковый", hex: "#D3D3D3" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Светлый беж", hex: "#F5F5DC" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" },
+        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
+        { name: "Светло-оливковый", hex: "#D3D3D3" },
+        { name: "Светло-розовый", hex: "#FFB6C1" },
+        { name: "Светло-коричневый", hex: "#D2B48C" },
+        { name: "Светло-черный", hex: "#696969" },
+        { name: "Светлый беж", hex: "#F5F5DC" },
+        { name: "Светло-голубой", hex: "#ADD8E6" },
+        { name: "Светло-синий", hex: "#B0E0E6" },
+        { name: "Светло-красный", hex: "#FF7F50" },
+        { name: "Светло-желтый", hex: "#FFFFE0" },
+        { name: "Светло-зеленый", hex: "#90EE90" }
+    ]
+];
+
+function validateColors() {
+    const seenColors = new Set();
+    let hasErrors = false;
+    
+    colorPages.forEach((page, pageIndex) => {
+        page.forEach((color, colorIndex) => {
+            const normalizedHex = color.hex.toLowerCase();
+            if (seenColors.has(normalizedHex)) {
+                console.error(`Duplicate color found: ${color.hex} on page ${pageIndex + 1}, index ${colorIndex}`);
+                hasErrors = true;
+            }
+            seenColors.add(normalizedHex);
+        });
+    });
+    
+    return !hasErrors;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (!validateColors()) {
+        console.error('Duplicate colors detected in the color pages!');
+    }
+    updateLanguageSwitcher();
+    updatePagination();
+    updateColorGrid();
+    
+    const searchInput = document.querySelector('.search-input');
+    searchInput.placeholder = translations[currentLang].searchPlaceholder;
+    
+    searchInput.addEventListener('focus', () => {
+        searchInput.placeholder = '';
+    });
+    
+    searchInput.addEventListener('blur', () => {
+        if (!searchInput.value) {
+            searchInput.placeholder = translations[currentLang].searchPlaceholder;
+        }
+    });
+
+    searchInput.addEventListener('input', (e) => filterColors(e.target.value));
+});
+
+function filterColors(searchTerm) {
+    const cards = document.querySelectorAll('.color-card');
+    const normalizedSearch = searchTerm.toLowerCase().trim();
+
+    requestAnimationFrame(() => {
+        cards.forEach(card => {
+            const colorName = card.querySelector('.color-name').textContent.toLowerCase();
+            const shouldShow = normalizedSearch === '' || colorName.includes(normalizedSearch);
+
+            if (shouldShow) {
+                card.style.display = '';
+                requestAnimationFrame(() => {
+                    card.classList.add('visible');
+                });
+            } else {
+                card.classList.remove('visible');
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 300);
+            }
+        });
+    });
+}
+
+function updateLanguageSwitcher() {
+    const languageSwitcher = document.querySelector('.language-switcher');
+    languageSwitcher.innerHTML = `
+        <button class="lang-btn" data-lang="ru" ${currentLang === 'ru' ? 'active' : ''}>
+            <svg viewBox="0 0 640 480">
+                <path fill="#fff" d="M0 0h640v480H0z"/>
+                <path fill="#0039A6" d="M0 160h640v320H0z"/>
+                <path fill="#D52B1E" d="M0 320h640v160H0z"/>
+            </svg>
+        </button>
+        <button class="lang-btn" data-lang="en" ${currentLang === 'en' ? 'active' : ''}>
+            <svg viewBox="0 0 640 480">
+                <path fill="#012169" d="M0 0h640v480H0z"/>
+                <path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
+                <path fill="#C8102E" d="M424 281l216 159v40L369 281h55zm-184 20l6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"/>
+                <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/>
+                <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
+            </svg>
+        </button>
+        <button class="lang-btn" data-lang="kk" ${currentLang === 'kk' ? 'active' : ''}>
+            <svg viewBox="0 0 640 480">
+                <path fill="#00AFE5" d="M0 0h640v480H0z"/>
+                <path fill="#FFF" d="M320 91c-74 0-134 60-134 134s60 134 134 134 134-60 134-134-60-134-134-134zm0 244c-61 0-110-49-110-110s49-110 110-110 110 49 110 110-49 110-110 110z"/>
+                <path fill="#FFF" d="M320 157l9 29h31l-25 18 10 29-25-18-25 18 10-29-25-18h31z"/>
+            </svg>
+        </button>
+    `;
+
+    languageSwitcher.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentLang = btn.dataset.lang;
+            updateLanguageSwitcher();
+            updatePage();
+        });
+    });
+}
+
+function updatePage() {
+    // Update document title
+    document.title = `${translations[currentLang].title} - ${translations[currentLang].page} ${currentPage}/5`;
+    
+    // Update search placeholder
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        searchInput.placeholder = translations[currentLang].searchPlaceholder;
+    }
+    
+    // Update notification text
+    const notification = document.getElementById('notification');
+    if (notification) {
+        notification.textContent = translations[currentLang].copied;
+    }
+    
+    // Update pagination text
+    const pageCounter = document.querySelector('.page-counter');
+    if (pageCounter) {
+        pageCounter.textContent = `${translations[currentLang].page} ${currentPage}/5`;
+    }
+
+    // Update all color names in the grid
+    const colorNames = document.querySelectorAll('.color-name');
+    colorNames.forEach(nameElement => {
+        const originalName = nameElement.getAttribute('data-original-name');
+        if (originalName) {
+            nameElement.textContent = translations[currentLang].colors[originalName] || originalName;
+        }
+    });
+
+    // Force grid update to refresh all translations
+    updateColorGrid();
+}
+
+let currentPage = 1;
+
+function updatePagination() {
+    const pagination = document.getElementById('pagination');
+    const totalPages = colorPages.length;
+    
+    pagination.innerHTML = `
+        <button class="arrow-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>
+            <svg width="24" height="24" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+        </button>
+        <div class="page-counter">${translations[currentLang].page} ${currentPage}/${totalPages}</div>
+        <button class="arrow-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>
+            <svg width="24" height="24" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+            </svg>
+        </button>
+    `;
+}
+
+function changePage(delta) {
+    const totalPages = colorPages.length;
+    const newPage = currentPage + delta;
+    
+    if (newPage >= 1 && newPage <= totalPages) {
+        currentPage = newPage;
+        updatePagination();
+        updateColorGrid();
+        document.title = `${translations[currentLang].title} - ${translations[currentLang].page} ${currentPage}/${totalPages}`;
+        
+        // Scroll to top smoothly
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+}
+
+function updateColorGrid() {
+    const grid = document.getElementById('colorGrid');
+    grid.classList.add('fade-out');
+    
+    setTimeout(() => {
+        grid.innerHTML = '';
+        const colors = colorPages[currentPage - 1];
+        
+        colors.forEach((color, index) => {
+            const translatedName = translations[currentLang].colors[color.name] || color.name;
+            const card = document.createElement('div');
+            card.className = 'color-card';
+            card.innerHTML = `
+                <div class="sphere-container">
+                    <div class="sphere" style="--sphere-color: ${color.hex}"></div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Инвентарь -->
-        <div class="inventory" id="inventory">
-            <div class="close-button" id="closeInventory">×</div>
-            <div class="inventory-grid">
-                <div class="inventory-slot">
-                    <div class="item" draggable="true" data-count="5">
-                        <svg viewBox="0 0 24 24" fill="#ffd700">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                <div class="color-info">
+                    <div class="color-name" data-original-name="${color.name}">${translatedName}</div>
+                    <div class="color-hex" onclick="copyToClipboard('${color.hex}')">
+                        ${color.hex}
+                        <svg class="copy-icon" viewBox="0 0 24 24">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                         </svg>
-                        <div class="item-count">5</div>
                     </div>
                 </div>
-                <div class="inventory-slot">
-                    <div class="item" draggable="true" data-count="3">
-                        <svg viewBox="0 0 24 24" fill="#c0392b">
-                            <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3c1.74,0 3.41,0.81 4.5,2.09C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"/>
-                        </svg>
-                        <div class="item-count">3</div>
-                    </div>
-                </div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-                <div class="inventory-slot"></div>
-            </div>
-        </div>
-    </div>
+            `;
+            
+            grid.appendChild(card);
+            
+            setTimeout(() => {
+                card.classList.add('visible');
+            }, index * 50);
+        });
+        
+        grid.classList.remove('fade-out');
+        grid.classList.add('fade-in');
+    }, 300);
+}
 
-    <!-- Контекстное меню для инвентаря -->
-    <div class="context-menu" id="contextMenu">
-        <div class="context-menu-option" id="splitOption">Разделить</div>
-        <div class="context-menu-option" id="dropOption">Выбросить</div>
-    </div>
-
-    <!-- Диалоговое окно для разделения стека -->
-    <div class="split-dialog" id="splitDialog">
-        <div>Количество:</div>
-        <input type="number" id="splitAmount" min="1">
-        <button id="confirmSplit">OK</button>
-        <button id="cancelSplit">Отмена</button>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const notification = document.getElementById('notification');
+        notification.style.opacity = '1';
+        setTimeout(() => {
+            notification.style.opacity = '0';
+        }, 2000);
+    });
+}
+</script>
+</body></html>
