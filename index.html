@@ -1,885 +1,1696 @@
-<html><head><base href="/">
-<title>Галерея 3D цветных сфер - Страница 1/5</title>
+<html><head><base href="https://example.com"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-    background: #1a1a1a;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     font-family: Arial, sans-serif;
+    background: #0f0f1a;
     color: white;
-    padding: 20px;
-    overscroll-behavior: none;
-}
-
-/* Add custom scrollbar styles */
-::-webkit-scrollbar {
-    width: 12px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.1);
-    border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.3);
-    border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.4);
-}
-
-.pagination {
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
-    margin: 20px 0;
 }
 
-.arrow-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-}
-
-.arrow-btn:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-.arrow-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.page-counter {
-    background: rgba(255,255,255,0.1);
-    padding: 8px 20px;
-    border-radius: 5px;
-    min-width: 120px;
-    text-align: center;
-}
-
-.color-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-    padding: 20px;
-    contain: content;
-    max-width: 1400px;
-    margin: 80px auto 0; /* Adjusted margin-top for spacing */
-    transition: opacity 0.3s ease;
-    will-change: opacity;
-}
-
-.color-grid.fade-out {
-    opacity: 0;
-}
-
-.color-grid.fade-in {
-    opacity: 1;
-}
-
-.color-card {
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    contain: content;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    will-change: transform, opacity;
-}
-
-/* Adjust the animation for new cards */
-.color-card.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.sphere-container {
-    height: 150px;
+.phone-container {
+    width: 100%;
+    max-width: 420px;
+    height: 100vh;
+    max-height: 900px;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1c1c2e 100%);
     position: relative;
-    transform-style: preserve-3d;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
-.sphere {
-    width: 100px;
-    height: 100px;
+.game-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.click-circle {
+    width: 150px;
+    height: 150px;
+    background: transparent; 
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.1s;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    overflow: hidden;
+    z-index: 5;
+}
+
+.click-circle::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: url('https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png') no-repeat center;
+    background-size: contain;
+}
+
+.click-circle:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+.click-effect {
+    position: absolute;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    background: var(--sphere-color);
-    box-shadow: 
-        inset -10px -10px 20px rgba(0,0,0,0.5),
-        inset 10px 10px 20px rgba(255,255,255,0.5),
-        0 0 20px var(--sphere-color);
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: clickRipple 0.5s ease-out;
 }
 
-.color-info {
-    margin-top: 10px;
-    font-size: 14px;
+@keyframes clickRipple {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
 }
 
-.color-name {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.color-hex {
-    font-family: monospace;
-    background: rgba(0,0,0,0.3);
-    padding: 3px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: fit-content;
-    margin: 0 auto;
-}
-
-.color-hex:hover {
-    background: rgba(255,255,255,0.2);
-}
-
-.copy-icon {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-}
-
-.notification {
-    position: fixed;
-    bottom: 20px;
+.score-container {
+    position: absolute;
+    top: 50px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 128, 0, 0.8) !important; /* Green background */
-    color: white !important;
-    padding: 12px 24px !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 1000;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 1200px) {
-    .color-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .color-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .color-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        padding: 15px;
-    }
-    
-    .search-input {
-        width: 200px;
-        padding: 10px 16px;
-    }
-    
-    .search-container {
-        right: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .color-grid {
-        grid-template-columns: repeat(1, 1fr);
-    }
-}
-
-/* Add language switcher styles */
-.language-switcher {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    gap: 10px;
-    z-index: 1000;
-}
-
-.lang-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    padding: 8px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    width: 40px;
-    height: 40px;
+    background: rgba(255, 51, 102, 0.2);
+    padding: 10px 30px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 51, 102, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 6;
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
 }
 
-.lang-btn:hover {
-    background: rgba(255,255,255,0.2);
+.score {
+    font-size: 32px;
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.lang-btn svg {
+.score img {
     width: 24px;
     height: 24px;
-    border-radius: 3px;
+    vertical-align: middle;
 }
 
-.search-container {
+.score small {
+    display: block;
+    color: #ff3366;
+    font-weight: normal;
+    margin-top: 5px; 
+}
+
+.nav-panel {
+    height: 70px;
+    background: rgba(15, 15, 26, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 10; 
+    position: fixed; 
+    bottom: 0;
+    width: 100%;
+    max-width: 420px; 
+}
+
+.nav-scroll {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nav-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.nav-content {
+    display: flex;
+    padding: 10px;
+    min-width: max-content;
+    gap: 15px;
+}
+
+.nav-btn {
+    min-width: 80px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 15px;
+    background: #1c1c2e;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: 0.3s;
+}
+
+.nav-btn img {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 3px;
+}
+
+.nav-btn.active {
+    background: #ff3366; /* Changed from #28a745 to match the red theme */
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.3); /* Updated shadow color */
+}
+
+.nav-btn:active {
+    transform: scale(0.95);
+}
+
+.nav-btn i {
+    font-size: 20px;
+}
+
+.section-content {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 70px; 
+    background: rgb(28, 28, 46);
+    z-index: 8; 
+    padding: 20px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    height: calc(100vh - 70px); 
+}
+
+.section-content::-webkit-scrollbar {
+    display: none;
+}
+
+.section-content.active {
+    display: block;
+}
+
+.development-video {
+    display: none; 
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 10px;
+}
+
+.shop-item {
+    background: rgba(255, 51, 102, 0.1);  /* Changed to red background */
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    border: 2px solid rgba(255, 51, 102, 0.3); /* Changed to red border */
+    transition: 0.3s;
+    z-index: 9; 
+}
+
+.shop-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 51, 102, 0.2);
+}
+
+.shop-item-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.shop-item-title {
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.shop-item-description {
+    font-size: 12px;
+    color: #aaa;
+    margin: 5px 0;
+}
+
+.shop-item-price {
+    font-size: 14px;
+    color: #0088ff;
+}
+
+.shop-item-new {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #0088ff;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.shop-item-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    position: relative; 
+    z-index: 10; 
+}
+
+.shop-item-button:hover {
+    background: #218838;
+}
+
+/* Remove disabled button styling */
+.shop-item-button:disabled {
+    background: #28a745;
+    cursor: pointer;
+    opacity: 1;
+}
+
+.tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.task-item {
+    background: rgba(40, 167, 69, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    border: 2px solid rgba(40, 167, 69, 0.3);
+    transition: 0.3s;
+    z-index: 9; 
+    margin-bottom: 15px;
+}
+
+.task-item.claimed {
+    opacity: 0.7;
+    background: rgba(40, 167, 69, 0.05);
+}
+
+.task-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.2);
+}
+
+.task-new {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #28a745;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.task-icon {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.task-title {
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.task-description {
+    font-size: 12px;
+    color: #aaa;
+    margin: 5px 0;
+}
+
+.task-reward {
+    font-size: 14px;
+    color: #28a745;
+    margin: 5px 0;
+}
+
+.task-claim-button {
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 15px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    position: relative; 
+    z-index: 10; 
+}
+
+.task-claim-button:disabled {
+    background: #666;
+    cursor: not-allowed;
+    opacity: 0.7;  /* Added opacity */
+}
+
+.task-claim-button:hover:not(:disabled) {
+    background: #218838;
+}
+
+.performance-overlay {
+    cursor: move;
+    user-select: none;
     position: fixed;
+    touch-action: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    color: #fff;
+    font-family: monospace;
+    z-index: 9999;
+    display: none;
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    border: 2px solid #ff3366;
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.performance-overlay::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.stats-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.snow, .snowflake {
+    display: none;
+}
+
+.toggle-slider span {
+    position: absolute;
+    content: '';
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider span {
+    transform: translateX(26px);
+}
+
+#changelogBtn {
+    display: none;
+    position: absolute;
     top: 20px;
     right: 20px;
-    z-index: 1000;
-}
-
-.search-input {
-    background: rgba(255,255,255,0.1);
+    background: transparent; 
     border: none;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 8px;
-    width: 250px;
-    font-size: 14px;
-    transition: background-color 0.2s;
+    padding: 8px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 15;
+    cursor: pointer;
 }
 
-.search-input:hover,
-.search-input:focus {
-    background: rgba(255,255,255,0.2);
-    outline: none;
+#changelogBtn img {
+    width: 32px;
+    height: 32px;
 }
 
-/* Update color grid margin to account for fixed search */
-.color-grid {
-    margin: 80px auto 0;
+.game-area:not(.section-content.active) #changelogBtn {
+    display: flex;
 }
 
-/* Update notification style to be green */
+#changelogModal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+    background: rgba(0, 0, 0, 0.95);
+    padding: 20px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    z-index: 9999;
+    display: none;
+    border: none;
+    box-shadow: none;
+}
+
+.modal-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--background);
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: var(--primary-color);
+}
+
+.changelog-pages {
+    display: flex;
+    transition: transform 0.5s ease;
+    height: 100%;
+}
+
+.page {
+    min-width: 100%;
+    height: 100%;
+    padding: 40px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.page:nth-child(1) {
+    background: #28a745;
+}
+
+.page:nth-child(2) {
+    background: #0088ff;
+}
+
+.page:nth-child(3) {
+    background: #1c1c2e;
+}
+
+.new-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.new-badge img {
+    width: 24px;
+    height: 24px;
+}
+
+.version {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.development-header {
+    background: linear-gradient(135deg, rgba(255, 51, 102, 0.2) 0%, rgba(255, 51, 102, 0.1) 100%);
+    padding: 15px 30px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 51, 102, 0.5);
+    margin-bottom: 30px;
+    backdrop-filter: blur(5px);
+    text-align: center;
+}
+
+.profile-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes float {
+    0%, 50%, 100% {
+        transform: translateY(0px);
+    }
+}
+
 .notification {
     position: fixed;
-    bottom: 20px;
+    top: -100px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 128, 0, 0.8) !important; /* Green background */
-    color: white !important;
-    padding: 12px 24px !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
+    background: rgba(40, 167, 69, 0.95);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    transition: all 0.3s ease-in-out;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
     opacity: 0;
-    transition: opacity 0.3s;
-    z-index: 1000;
+    visibility: hidden;
+}
+
+.notification.show {
+    top: 20px;
+    opacity: 1;
+    visibility: visible;
+    animation: notificationFloat 0.3s ease-out;
+}
+
+@keyframes notificationFloat {
+    0% {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+#development-section img {
+    width: 300px;  /* Reduced from 400px */
+    height: 300px; /* Reduced from 400px */
+}
+
+.task-progress {
+    color: #ff3366;
+    font-size: 12px;
+    margin: 5px 0;
 }
 </style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-<div class="language-switcher"></div>
-<div class="search-container">
-    <input type="text" class="search-input" placeholder="Поиск цвета...">
+
+<div class="phone-container">
+    <button id="changelogBtn">
+        <img src="https://i.postimg.cc/85KmdfzV/free-icon-newspaper-8417401.png" alt="Changelog">
+    </button>
+    <div class="notification"></div>
+    <div class="game-area">
+        <div class="score-container">
+            <div class="score">0</div>
+        </div>
+        <div class="click-circle"></div>
+        <div class="section-content" id="shop-section">
+            <div class="shop-grid">
+            </div>
+        </div>
+        <div class="section-content" id="settings-section">
+            <i class="fas fa-cog development-icon"></i>
+            <div class="settings-options" style="margin-top: 20px; background: rgba(0, 136, 255, 0.1); padding: 20px; border-radius: 15px;">
+                <div class="settings-option" style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="https://i.postimg.cc/nVTK9hF1/image.png" style="width: 24px; height: 24px;">
+                        <div>
+                            <h3 style="margin-bottom: 5px;">Вибрация</h3>
+                            <p style="font-size: 14px; color: #aaa;">Включить вибрацию при клике</p>
+                        </div>
+                    </div>
+                    <label class="toggle-switch" style="position: relative; display: inline-block; width: 60px; height: 34px;">
+                        <input type="checkbox" id="vibrationToggle" checked style="opacity: 0; width: 0; height: 0;">
+                        <span class="toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;">
+                            <span style="position: absolute; content: ''; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .2s; border-radius: 50%;"></span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="section-content" id="tasks-section">
+            <div class="tasks-grid">
+                ${renderTasks()}
+            </div>
+        </div>
+        <div class="section-content" id="development-section">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; padding-top: 20px;">
+                <div class="development-header" style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, rgba(255, 51, 102, 0.2) 0%, rgba(255, 51, 102, 0.1) 100%); padding: 15px 30px; border-radius: 20px; border: 2px solid rgba(255, 51, 102, 0.5); backdrop-filter: blur(5px);">
+                    <h3 style="margin: 0; color: white; font-size: 24px;">Раздел в разработке</h3>
+                </div>
+                <img src="https://i.postimg.cc/5NHn3gzK/free-icon-web-development-1352837.png" 
+                     alt="Development" 
+                     style="width: 300px; 
+                            height: 300px; 
+                            object-fit: contain;
+                            filter: drop-shadow(0 0 20px rgba(255, 51, 102, 0.3));">
+            </div>
+        </div>
+        <div class="section-content" id="stats-section">
+            <!-- Content will be populated by updateStatsSection() -->
+        </div>
+    </div>
+
+    <nav class="nav-panel">
+        <div class="nav-scroll">
+            <div class="nav-content">
+                <button class="nav-btn active">
+                    <img src="https://i.postimg.cc/s2zm3RNb/free-icon-home-8706612.png" alt="Home">
+                    Главная
+                </button>
+                <button class="nav-btn">
+                    <img src="https://i.postimg.cc/NMppNPbS/free-icon-shopping-cart-3643914.png" alt="Shop">
+                    Магазин
+                </button>
+                <button class="nav-btn">
+                    <img src="https://i.postimg.cc/sxLKzQkJ/free-icon-star-5782443.png" alt="Rewards">
+                    Награды
+                </button>
+                <button class="nav-btn">
+                    <img src="https://i.postimg.cc/fWq8mpV0/free-icon-to-do-list-6019756.png" alt="Tasks">
+                    Задания
+                </button>
+                <button class="nav-btn">
+                    <img src="https://i.postimg.cc/SRRVH7vs/free-icon-skyscraper-5776308.png" alt="City">
+                    Город
+                </button>
+                <button class="nav-btn">
+                    <img src="https://i.postimg.cc/DZycbPFg/free-icon-investment-5530639.png" alt="Investments">
+                    Инвестиции
+                </button>
+                <button class="nav-btn">
+                    <img src="https://i.postimg.cc/nLfRMmCR/free-icon-setting-3288004.png" alt="Settings">
+                    Настройки
+                </button>
+                <button class="nav-btn">
+                    <img src="https://i.postimg.cc/YSx39sc0/free-icon-inferential-statistics-8921140.png" alt="Statistics">
+                    Статистика
+                </button>
+            </div>
+        </div>
+    </nav>
 </div>
-<div class="pagination" id="pagination"></div>
-<div class="color-grid" id="colorGrid"></div>
-<div class="notification" id="notification">Код цвета скопирован!</div>
+
+<div id="changelogModal">
+    <div class="modal-content">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; padding-top: 20px;">
+            <div class="development-header" style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, rgba(255, 51, 102, 0.2) 0%, rgba(255, 51, 102, 0.1) 100%); padding: 15px 30px; border-radius: 20px; border: 2px solid rgba(255, 51, 102, 0.5); backdrop-filter: blur(5px);">
+                <h3 style="margin: 0; color: white; font-size: 24px;">Раздел в разработке</h3>
+            </div>
+            <img src="https://i.postimg.cc/5NHn3gzK/free-icon-web-development-1352837.png" 
+                 alt="Development" 
+                 style="width: 300px; 
+                        height: 300px; 
+                        object-fit: contain;
+                        filter: drop-shadow(0 0 20px rgba(255, 51, 102, 0.3));">
+            <button class="close-btn" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 24px; cursor: pointer;">×</button>
+        </div>
+    </div>
+</div>
 
 <script>
-const translations = {
-    ru: {
-        title: 'Галерея 3D цветных сфер',
-        search: 'Поиск цвета...',
-        copied: 'Код цвета скопирован!',
-        page: 'Страница',
-        searchPlaceholder: 'Поиск цвета...',
-        colors: {
-            "Космический пурпурный": "Космический пурпурный",
-            "Электрический лайм": "Электрический лайм",
-            "Неоновый коралл": "Неоновый коралл",
-            "Глубокий бирюзовый": "Глубокий бирюзовый",
-            "Мистический синий": "Мистический синий",
-            "Малахитовый": "Малахитовый",
-            "Персиковый закат": "Персиковый закат",
-            "Глубокий синий": "Глубокий синий",
-            "Яблочно-зеленый": "Яблочно-зеленый",
-            "Теплый коричневый": "Теплый коричневый",
-            "Теплый белый": "Теплый белый",
-            "Темно-зеленый": "Темно-зеленый",
-            "Скорлупный": "Скорлупный",
-            "Теплый желтый": "Теплый желтый",
-            "Мистический фиолетовый": "Мистический фиолетовый",
-            "Коали": "Коали",
-            "Глубокий изумрудный": "Глубокий изумрудный",
-            "Светло-салатовый": "Светло-салатовый",
-            "Персиковый крем": "Персиковый крем",
-            "Теплый мандариновый": "Теплый мандариновый",
-            "Нежно-голубое": "Нежно-голубое",
-            "Темный беж": "Темный беж",
-            "Кремовый": "Кремовый",
-            "Кобальтовый синий": "Кобальтовый синий",
-            "Ледяной": "Ледяной",
-            // Add additional 250 colors here...
-        }
-    },
-    en: {
-        title: '3D Color Spheres Gallery',  
-        search: 'Search color...',
-        copied: 'Color code copied!',
-        page: 'Page',
-        searchPlaceholder: 'Search color...',
-        colors: {
-            "Космический пурпурный": "Cosmic Purple",
-            "Электрический лайм": "Electric Lime",
-            "Неоновый коралл": "Neon Coral",
-            "Глубокий бирюзовый": "Deep Teal",
-            "Мистический синий": "Mystical Blue",
-            "Малахитовый": "Malachite",
-            "Персиковый закат": "Peach Sunset",
-            "Глубокий синий": "Deep Blue",
-            "Яблочно-зеленый": "Apple Green",
-            "Теплый коричневый": "Warm Brown",
-            "Теплый белый": "Warm White",
-            "Темно-зеленый": "Dark Green",
-            "Скорлупный": "Shell",
-            "Теплый желтый": "Warm Yellow",
-            "Мистический фиолетовый": "Mystical Purple",
-            "Коали": "Koala",
-            "Глубокий изумрудный": "Deep Emerald",
-            "Светло-салатовый": "Light Salad",
-            "Персиковый крем": "Peach Cream",
-            "Теплый мандариновый": "Warm Mandarin",
-            "Нежно-голубое": "Soft Blue",
-            "Темный беж": "Dark Beige",
-            "Кремовый": "Cream",
-            "Кобальтовый синий": "Cobalt Blue",
-            "Ледяной": "Icy",
-            // Add additional 250 colors here...
-        }
-    },
-    kk: {
-        title: '3D түсті сфералар галереясы',
-        search: 'Түсті іздеу...',
-        copied: 'Түс коды көшірілді!', 
-        page: 'Бет',
-        searchPlaceholder: 'Түсті іздеу...',
-        colors: {
-            "Космический пурпурный": "Ғарыштық күлгін",
-            "Электрический лайм": "Электрлік лайм",
-            "Неоновый коралл": "Неонды коралл",
-            "Глубокий бирюзовый": "Терең көк",
-            "Мистический синий": "Мистикалық көк",
-            "Малахитовый": "Малахит",
-            "Персиковый закат": "Шабдалы кешкі",
-            "Глубокий синий": "Терең көк",
-            "Яблочно-зеленый": "Алма жасыл",
-            "Теплый коричневый": "Жылы қоңыр",
-            "Теплый белый": "Жылы ақ",
-            "Темно-зеленый": "Қара жасыл",
-            "Скорлупный": "Қабық",
-            "Теплый желтый": "Жылы сары",
-            "Мистический фиолетовый": "Мистикалық күлгін",
-            "Коали": "Коала",
-            "Глубокий изумрудный": "Терең изумруд",
-            "Светло-салатовый": "Жеңіл салат",
-            "Персиковый крем": "Шабдалы крем",
-            "Теплый мандариновый": "Жылы мандарин",
-            "Нежно-голубое": "Жұмсақ көк",
-            "Темный беж": "Қара беж",
-            "Кремовый": "Крем",
-            "Кобальтовый синий": "Кобальт көк",
-            "Ледяной": "Мұздай",
-            // Add additional 250 colors here...
-        }
-    }
-};
-
-let currentLang = 'ru'; // Default language
-
-const colorPages = [
-    // Page 1 - First 50 unique colors
-    [
-        { name: "Космический пурпурный", hex: "#663399" },
-        { name: "Электрический лайм", hex: "#CCFF00" },
-        { name: "Неоновый коралл", hex: "#FF6666" },
-        { name: "Глубокий бирюзовый", hex: "#008080" },
-        { name: "Мистический синий", hex: "#4B0082" },
-        { name: "Ярко-красный", hex: "#FF0000" },
-        { name: "Солнечный желтый", hex: "#FFD700" },
-        { name: "Горчичный", hex: "#FFDB58" },
-        { name: "Теплый розовый", hex: "#FF69B4" },
-        { name: "Янтарный", hex: "#FFBF00" },
-        { name: "Лаванда", hex: "#E6E6FA" },
-        { name: "Небесно-голубой", hex: "#87CEEB" },
-        { name: "Теплый серый", hex: "#A9A9A9" },
-        { name: "Фуксия", hex: "#FF00FF" },
-        { name: "Бордо", hex: "#800000" },
-        { name: "Зеленый лес", hex: "#228B22" },
-        { name: "Теплый оранжевый", hex: "#FFA500" },
-        { name: "Ярко-синий", hex: "#0000FF" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Сиреневый", hex: "#DDA0DD" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Розовый", hex: "#FFC0CB" },
-        { name: "Глубокий красный", hex: "#8B0000" },
-        { name: "Морская волна", hex: "#20B2AA" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Теплый лавандовый", hex: "#E6E6FA" },
-        { name: "Глубокий фиолетовый", hex: "#800080" },
-        { name: "Светло-синий", hex: "#ADD8E6" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Темный оливковый", hex: "#556B2F" },
-        { name: "Светло-фиолетовый", hex: "#9370DB" },
-        { name: "Теплый красный", hex: "#FF4500" },
-        { name: "Голубой", hex: "#00BFFF" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-серый", hex: "#D3D3D3" },
-        { name: "Глубокий синий", hex: "#00008B" },
-        { name: "Оливковый", hex: "#808000" },
-        { name: "Светло-синий", hex: "#87CEEB" },
-        { name: "Темный красный", hex: "#A52A2A" },
-        { name: "Темно-синий", hex: "#000080" },
-        { name: "Темный зеленый", hex: "#006400" },
-        { name: "Ярко-розовый", hex: "#FF1493" },
-        { name: "Ярко-красный", hex: "#FF4500" },
-        { name: "Темный фиолетовый", hex: "#4B0082" },
-        { name: "Желто-зеленый", hex: "#9ACD32" },
-        { name: "Темный желтый", hex: "#FFD700" },
-        { name: "Темный оранжевый", hex: "#FF8C00" },
-        { name: "Глубокий желтый", hex: "#FFC300" },
-        { name: "Глубокий синий", hex: "#003366" },
-        { name: "Светлый серый", hex: "#C0C0C0" },
-        { name: "Темный серый", hex: "#A9A9A9" },
-        { name: "Светлый желтый", hex: "#FFFFE0" },
-        { name: "Глубокий черный", hex: "#000000" },
-        { name: "Светлый оранжевый", hex: "#FFA500" },
-        { name: "Темный оранжевый", hex: "#FF8C00" },
-        { name: "Ярко-зеленый", hex: "#32CD32" },
-        { name: "Светлый зеленый", hex: "#90EE90" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Светло-коричневый", hex: "#D2B48C" }
-    ],
-    // Page 2 - Next 50 unique colors
-    [
-        { name: "Малахитовый", hex: "#0BDA51" },
-        { name: "Персиковый закат", hex: "#FF9966" },
-        { name: "Глубокий синий", hex: "#00008B" },
-        { name: "Яблочно-зеленый", hex: "#A4D65E" },
-        { name: "Теплый коричневый", hex: "#8B4513" },
-        { name: "Теплый серый", hex: "#BEBEBE" },
-        { name: "Серый", hex: "#808080" },
-        { name: "Светло-оливковый", hex: "#D3D3D3" },
-        { name: "Темный хаки", hex: "#BDB76B" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Глубокий серый", hex: "#A9A9A9" },
-        { name: "Глубокий красный", hex: "#8B0000" },
-        { name: "Теплый фиолетовый", hex: "#8A2BE2" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Глубокий желтый", hex: "#FFD700" },
-        { name: "Темный оранжевый", hex: "#FF8C00" },
-        { name: "Темный красный", hex: "#A52A2A" },
-        { name: "Глубокий синий", hex: "#003366" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Теплый желтый", hex: "#FFD700" },
-        { name: "Темный серый", hex: "#696969" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Глубокий голубой", hex: "#4682B4" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Темный голубой", hex: "#0000CD" },
-        { name: "Светло-фиолетовый", hex: "#E6E6FA" },
-        { name: "Ярко-розовый", hex: "#FF69B4" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Темный зеленый", hex: "#006400" },
-        { name: "Глубокий черный", hex: "#000000" },
-        { name: "Темный коричневый", hex: "#5C4033" },
-        { name: "Светлый беж", hex: "#F5F5DC" },
-        { name: "Персиковый крем", hex: "#FFDAB9" },
-        { name: "Теплый мандариновый", hex: "#FFDA44" },
-        { name: "Нежно-голубое", hex: "#87CEEB" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Темный беж", hex: "#D4B89A" },
-        { name: "Глубокий фиолетовый", hex: "#4B0082" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Темный фиолетовый", hex: "#4B0082" },
-        { name: "Темный оранжевый", hex: "#FF8C00" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Темный серый", hex: "#696969" },
-        { name: "Светлый красный", hex: "#FF7F50" },
-        { name: "Светлый желтый", hex: "#FFFFE0" },
-        { name: "Темный серый", hex: "#A9A9A9" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Темный черный", hex: "#000000" }
-    ],
-    // Page 3 - Next 50 unique colors
-    [
-        { name: "Теплый белый", hex: "#FFFAF0" },
-        { name: "Темно-зеленый", hex: "#003300" },
-        { name: "Скорлупный", hex: "#D7B999" },
-        { name: "Теплый желтый", hex: "#FFD700" },
-        { name: "Мистический фиолетовый", hex: "#9400D3" },
-        { name: "Светло-голубой", hex: "#87CEEB" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-оливковый", hex: "#D3D3D3" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Светлый беж", hex: "#F5F5DC" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-оливковый", hex: "#D3D3D3" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Светлый беж", hex: "#F5F5DC" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" }
-    ],
-    // Page 4 - Next 50 unique colors
-    [
-        { name: "Коали", hex: "#BCB0A8" },
-        { name: "Глубокий изумрудный", hex: "#004d00" },
-        { name: "Светло-салатовый", hex: "#98FB98" },
-        { name: "Персиковый крем", hex: "#FFDAB9" },
-        { name: "Теплый мандариновый", hex: "#FFDA44" },
-        { name: "Нежно-голубое", hex: "#87CEEB" },
-        { name: "Темный беж", hex: "#D4B89A" },
-        { name: "Кремовый", hex: "#FFFDD0" },
-        { name: "Кобальтовый синий", hex: "#0047AB" },
-        { name: "Ледяной", hex: "#99CCFF" },
-        { name: "Теплый красный", hex: "#FF4500" },
-        { name: "Теплый зеленый", hex: "#8FBC8F" },
-        { name: "Светло-синий", hex: "#87CEEB" },
-        { name: "Теплый розовый", hex: "#FF69B4" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-оливковый", hex: "#D3D3D3" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Светлый беж", hex: "#F5F5DC" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-оливковый", hex: "#D3D3D3" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Светлый беж", hex: "#F5F5DC" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" }
-    ],
-    // Page 5 - Final 50 unique colors
-    [
-        { name: "Нежно-голубое", hex: "#87CEEB" },
-        { name: "Темный беж", hex: "#D4B89A" },
-        { name: "Кремовый", hex: "#FFFDD0" },
-        { name: "Кобальтовый синий", hex: "#0047AB" },
-        { name: "Ледяной", hex: "#99CCFF" },
-        { name: "Теплый красный", hex: "#FF4500" },
-        { name: "Теплый зеленый", hex: "#8FBC8F" },
-        { name: "Светло-синий", hex: "#87CEEB" },
-        { name: "Теплый розовый", hex: "#FF69B4" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-оливковый", hex: "#D3D3D3" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Светлый беж", hex: "#F5F5DC" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" },
-        { name: "Светло-фиолетовый", hex: "#DDA0DD" },
-        { name: "Светло-оливковый", hex: "#D3D3D3" },
-        { name: "Светло-розовый", hex: "#FFB6C1" },
-        { name: "Светло-коричневый", hex: "#D2B48C" },
-        { name: "Светло-черный", hex: "#696969" },
-        { name: "Светлый беж", hex: "#F5F5DC" },
-        { name: "Светло-голубой", hex: "#ADD8E6" },
-        { name: "Светло-синий", hex: "#B0E0E6" },
-        { name: "Светло-красный", hex: "#FF7F50" },
-        { name: "Светло-желтый", hex: "#FFFFE0" },
-        { name: "Светло-зеленый", hex: "#90EE90" }
-    ]
-];
-
-function validateColors() {
-    const seenColors = new Set();
-    let hasErrors = false;
-    
-    colorPages.forEach((page, pageIndex) => {
-        page.forEach((color, colorIndex) => {
-            const normalizedHex = color.hex.toLowerCase();
-            if (seenColors.has(normalizedHex)) {
-                console.error(`Duplicate color found: ${color.hex} on page ${pageIndex + 1}, index ${colorIndex}`);
-                hasErrors = true;
-            }
-            seenColors.add(normalizedHex);
-        });
-    });
-    
-    return !hasErrors;
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (!validateColors()) {
-        console.error('Duplicate colors detected in the color pages!');
+function getTaskProgress(task) {
+    switch(task.type) {
+        case 'clicks':
+            return `${formatNumber(Math.floor(totalClicks))} / ${formatNumber(task.requirement)} кликов`;
+        case 'purchases':
+            const totalPurchases = shopItems.reduce((sum, item) => sum + item.level, 0);
+            return `${totalPurchases} / ${task.requirement} покупок`;
+        case 'cps':
+            return `${formatNumber(Math.floor(autoClickPower))} / ${formatNumber(task.requirement)} кликов/сек`;
+        case 'time':
+            const playTime = Math.floor((Date.now() - (lastUpdateTime || Date.now())) / 1000);
+            return `${Math.floor(playTime / 3600)}ч ${Math.floor((playTime % 3600) / 60)}м ${playTime % 60}с / ${Math.floor(task.requirement / 3600)}ч`;
+        case 'hourly':
+            const hourlyRate = Math.floor(autoClickPower * 3600);
+            return `${formatNumber(hourlyRate)} / ${formatNumber(task.requirement)} кликов/час`;
+        default:
+            return 'Прогресс неизвестен';
     }
-    updateLanguageSwitcher();
-    updatePagination();
-    updateColorGrid();
-    
-    const searchInput = document.querySelector('.search-input');
-    searchInput.placeholder = translations[currentLang].searchPlaceholder;
-    
-    searchInput.addEventListener('focus', () => {
-        searchInput.placeholder = '';
-    });
-    
-    searchInput.addEventListener('blur', () => {
-        if (!searchInput.value) {
-            searchInput.placeholder = translations[currentLang].searchPlaceholder;
-        }
-    });
+}
 
-    searchInput.addEventListener('input', (e) => filterColors(e.target.value));
+function renderTasks() {
+    const completedTasks = tasks.filter(task => task.claimed);
+    const uncompletedTasks = tasks.filter(task => !task.claimed);
+    
+    return `
+        <div style="margin-bottom: 20px;">
+            <h2 style="color: #fff; margin-bottom: 15px;">Активные задания</h2>
+            ${uncompletedTasks.map(task => `
+                <div class="task-item">
+                    ${task.isNew ? `<span class="task-new">NEW</span>` : ''}
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-description">${task.description}</div>
+                    <div class="task-reward">
+                        Награда: ${formatNumber(task.reward)} 
+                        <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" 
+                             style="width: 16px; height: 16px; vertical-align: middle;">
+                    </div>
+                    <div class="task-progress" style="color: #ff3366; font-size: 12px; margin: 5px 0;">
+                        ${getTaskProgress(task)}
+                    </div>
+                    <button class="task-claim-button" 
+                            data-task-id="${task.id}"
+                            ${canClaimTask(task) ? '' : 'disabled'}>
+                        ${canClaimTask(task) ? 'Получить' : 'Не выполнено'}
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+        ${completedTasks.length > 0 ? `
+            <div>
+                <h2 style="color: #fff; margin-bottom: 15px;">Выполненные задания</h2>
+                ${completedTasks.map(task => `
+                    <div class="task-item claimed">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-description">${task.description}</div>
+                        <div class="task-reward">
+                            Получено: ${formatNumber(task.reward)} 
+                            <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" 
+                                 style="width: 16px; height: 16px; vertical-align: middle;">
+                        </div>
+                        <button class="task-claim-button" disabled>
+                            Выполнено
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        ` : ''}
+    `;
+}
+
+// Add helper function to check if task can be claimed
+function canClaimTask(task) {
+    switch(task.type) {
+        case 'clicks':
+            return Math.floor(totalClicks) >= task.requirement;
+        case 'purchases':
+            return shopItems.reduce((sum, item) => sum + item.level, 0) >= task.requirement;
+        case 'cps':
+            return Math.floor(autoClickPower) >= task.requirement;
+        case 'time':
+            const playTime = Math.floor((Date.now() - (lastUpdateTime || Date.now())) / 1000);
+            return playTime >= task.requirement;
+        case 'hourly':
+            return Math.floor(autoClickPower * 3600) >= task.requirement;
+        case 'streak':
+            return false; // This would need additional tracking logic
+        case 'total_achievements':
+            const claimedCount = tasks.filter(t => t.claimed && t.id !== task.id).length;
+            return claimedCount >= task.requirement;
+        default:
+            return false;
+    }
+}
+
+// Fix purchase item function to use Math.floor for score comparison
+function purchaseItem(itemId) {
+    const item = shopItems.find(i => i.id === itemId);
+    if (!item) return;
+
+    const button = document.querySelector(`.shop-item-button[data-item-id="${itemId}"]`);
+    
+    // Update purchase check to remove disabled state check
+    if (Math.floor(score) < item.price) {
+        showNotification(`Недостаточно для покупки ${item.title}`);
+        return;
+    }
+
+    score -= item.price;
+    item.level++;
+    item.price = Math.floor(item.basePrice * Math.pow(1.2, item.level));
+    autoClickPower += item.power;
+    
+    updateScoreDisplay();
+    updateShopItems();
+    showNotification(`Улучшение "${item.title}" куплено! Уровень: ${item.level}`);
+}
+
+// Update shop items rendering to remove disabled state
+function updateShopItems() {
+    const shopGrid = document.querySelector('.shop-grid');
+    shopGrid.innerHTML = shopItems.map(item => `
+        <div class="shop-item">
+            <span class="shop-item-new">LVL ${item.level}</span>
+            <div class="shop-item-icon">${item.icon}</div>
+            <div class="shop-item-title">${item.title}</div>
+            <div class="shop-item-description">${item.description}</div>
+            <div class="shop-item-price">
+                ${formatNumber(item.price)} <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" style="width: 16px; height: 16px; vertical-align: middle;">
+            </div>
+            <button class="shop-item-button" data-item-id="${item.id}">
+                Улучшить
+            </button>
+        </div>
+    `).join('');
+}
+
+// Fix score display to always use Math.floor
+function updateScoreDisplay() {
+    scoreElement.innerHTML = `
+        <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" alt="Coins">
+        ${formatNumber(Math.floor(score))}
+    `;
+}
+
+// Fix scoring and total clicks tracking
+document.addEventListener('DOMContentLoaded', function() {
+    const clickCircle = document.querySelector('.click-circle');
+    if (clickCircle) {
+        clickCircle.addEventListener('click', () => {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            clickCircle.appendChild(effect);
+            
+            effect.addEventListener('animationend', () => {
+                effect.remove();
+            });
+            
+            // Fix scoring and total clicks tracking
+            score = Math.floor(score + 1);
+            totalClicks = Math.floor(totalClicks + 1);
+            totalEarned = Math.floor(totalEarned + 1);
+            
+            updateScoreDisplay();
+            
+            // Update task progress display after each click
+            const tasksGrid = document.querySelector('.tasks-grid');
+            if (tasksGrid) {
+                tasksGrid.innerHTML = renderTasks();
+            }
+            
+            if (vibrationEnabled) {
+                try {
+                    window.navigator.vibrate(15);
+                } catch (e) {
+                    console.log('Vibration failed:', e);
+                }
+            }
+            
+            saveGameState();
+        });
+    }
 });
 
-function filterColors(searchTerm) {
-    const cards = document.querySelectorAll('.color-card');
-    const normalizedSearch = searchTerm.toLowerCase().trim();
+// Fix task progress display formatting
+function getTaskProgress(task) {
+    switch(task.type) {
+        case 'clicks':
+            return `${formatNumber(Math.floor(totalClicks))} / ${formatNumber(task.requirement)} кликов`;
+        case 'purchases':
+            const totalPurchases = shopItems.reduce((sum, item) => sum + item.level, 0);
+            return `${totalPurchases} / ${task.requirement} покупок`;
+        case 'cps':
+            return `${formatNumber(Math.floor(autoClickPower))} / ${formatNumber(task.requirement)} кликов/сек`;
+        case 'time':
+            const playTime = Math.floor((Date.now() - (lastUpdateTime || Date.now())) / 1000);
+            return `${Math.floor(playTime / 3600)}ч ${Math.floor((playTime % 3600) / 60)}м ${playTime % 60}с / ${Math.floor(task.requirement / 3600)}ч`;
+        case 'hourly':
+            const hourlyRate = Math.floor(autoClickPower * 3600);
+            return `${formatNumber(hourlyRate)} / ${formatNumber(task.requirement)} кликов/час`;
+        default:
+            return 'Прогресс неизвестен';
+    }
+}
 
-    requestAnimationFrame(() => {
-        cards.forEach(card => {
-            const colorName = card.querySelector('.color-name').textContent.toLowerCase();
-            const shouldShow = normalizedSearch === '' || colorName.includes(normalizedSearch);
+// Update game state saving to use Math.floor
+function saveGameState() {
+    if (!tg?.initDataUnsafe?.user?.id) return;
+    
+    const now = Date.now();
+    const gameState = {
+        score: Math.floor(score),
+        autoClickPower,
+        lastUpdateTime: now,
+        shopItems,
+        tasks,
+        totalClicks: Math.floor(totalClicks),
+        maxBalance: Math.floor(maxBalance),
+        totalEarned: Math.floor(totalEarned)
+    };
+    
+    localStorage.setItem(`gameState_${tg.initDataUnsafe.user.id}`, JSON.stringify(gameState));
+}
 
-            if (shouldShow) {
-                card.style.display = '';
-                requestAnimationFrame(() => {
-                    card.classList.add('visible');
-                });
+let tg = window.Telegram?.WebApp;
+
+// Initialize Telegram user data
+function initTelegramUser() {
+    if (tg) {
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('username').textContent = user.username || 'Anonymous User';
+            document.getElementById('userId').textContent = `ID: ${user.id || 'Unknown'}`;
+            
+            if (user.photo_url) {
+                document.getElementById('userPhoto').src = user.photo_url;
+            }
+        }
+        tg.ready();
+    }
+}
+
+// Call this when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const clickCircle = document.querySelector('.click-circle');
+    const savedVibration = localStorage.getItem('vibrationEnabled');
+    vibrationEnabled = savedVibration === null ? true : savedVibration === 'true';
+    
+    const vibrationToggle = document.getElementById('vibrationToggle');
+    if (vibrationToggle) {
+        vibrationToggle.checked = vibrationEnabled;
+    }
+
+    // Add click handler here after element is available
+    if (clickCircle) {
+        clickCircle.addEventListener('click', () => {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            clickCircle.appendChild(effect);
+            
+            effect.addEventListener('animationend', () => {
+                effect.remove();
+            });
+            
+            score = Math.floor(score + 1);
+            totalClicks = Math.floor(totalClicks + 1);
+            totalEarned = Math.floor(totalEarned + 1);
+            updateScoreDisplay();
+            
+            // Update task progress display after each click
+            const tasksGrid = document.querySelector('.tasks-grid');
+            if (tasksGrid) {
+                tasksGrid.innerHTML = renderTasks();
+            }
+            
+            if (vibrationEnabled) {
+                try {
+                    window.navigator.vibrate(15);
+                } catch (e) {
+                    console.log('Vibration failed:', e);
+                }
+            }
+            
+            saveGameState();
+        });
+    }
+    
+    initializeNavigation();
+    loadGameState();
+    initTelegramUser();
+    updateShopItems();
+    updateGame();
+    const tasksGrid = document.querySelector('.tasks-grid');
+    if (tasksGrid) {
+        tasksGrid.innerHTML = renderTasks();
+    }
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('shop-item-button')) {
+        const itemId = parseInt(e.target.getAttribute('data-item-id'));
+        if (!isNaN(itemId)) {
+            purchaseItem(itemId);
+        }
+    }
+    
+    if (e.target.classList.contains('task-claim-button')) {
+        const taskId = parseInt(e.target.getAttribute('data-task-id'));
+        if (!isNaN(taskId)) {
+            claimTask(taskId);
+        }
+    }
+});
+
+function showNotification(message) {
+    const notification = document.querySelector('.notification');
+    
+    // Clear any existing timeout
+    if (window.notificationTimeout) {
+        clearTimeout(window.notificationTimeout);
+    }
+    
+    // Check if message contains "недостаточно" to determine if it's an error
+    const isError = message.toLowerCase().includes('недостаточно');
+    
+    // Add color styling based on notification type
+    notification.style.background = isError ? 'rgba(255, 51, 102, 0.95)' : 'rgba(40, 167, 69, 0.95)';
+    
+    // Replace the word "клики" and its variations with coin icon
+    const modifiedMessage = message.replace(/клики?в?/g, '<img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" style="width: 16px; height: 16px; vertical-align: middle;">');
+    
+    notification.innerHTML = modifiedMessage;
+    notification.classList.add('show');
+    
+    // Set new timeout
+    window.notificationTimeout = setTimeout(() => {
+        notification.classList.remove('show');
+        // Add additional timeout to reset visibility after animation
+        setTimeout(() => {
+            notification.style.visibility = 'hidden';
+        }, 300);
+    }, 3000);
+}
+
+const sectionContents = document.querySelectorAll('.section-content');
+const gameArea = document.querySelector('.game-area');
+const scoreContainer = document.querySelector('.score-container');
+const scoreElement = document.querySelector('.score');
+
+let score = 0;
+let autoClickPower = 0;
+let lastUpdateTime = Date.now();
+let totalClicks = 0;
+let maxBalance = 0;
+let totalEarned = 0;
+let lastSaveTime = Date.now(); // Initialize last save time variable
+
+let shopItems = [
+    {
+        id: 1,
+        icon: `<img src="https://i.postimg.cc/T3gQ8PCr/free-icon-gear-9482814.png" alt="Автокликер">`,
+        title: 'Автокликер',
+        price: 500,
+        basePrice: 500,
+        level: 0,
+        power: 1,
+        description: 'Добавляет 1 клик/сек'
+    }
+];
+
+let tasks = [
+    {
+        id: 1,
+        icon: '',
+        title: 'Первые шаги',
+        description: 'Накопите 100 кликов',
+        reward: 50,
+        requirement: 100,
+        type: 'clicks',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 2,
+        icon: '',
+        title: 'Начинающий кликер',
+        description: 'Накопите 1,000 кликов',
+        reward: 200,
+        requirement: 1000,
+        type: 'clicks',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 3,
+        icon: '',
+        title: 'Опытный кликер',
+        description: 'Накопите 10,000 кликов',
+        reward: 1000,
+        requirement: 10000,
+        type: 'clicks',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 4,
+        icon: '',
+        title: 'Мастер кликер',
+        description: 'Накопите 100,000 кликов',
+        reward: 5000,
+        requirement: 100000,
+        type: 'clicks',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 5,
+        icon: '',
+        title: 'Король кликов',
+        description: 'Накопите 1,000,000 кликов',
+        reward: 25000,
+        requirement: 1000000,
+        type: 'clicks',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 6,
+        icon: '',
+        title: 'Первая покупка',
+        description: 'Купите любое улучшение',
+        reward: 100,
+        requirement: 1,
+        type: 'purchases',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 7,
+        icon: '',
+        title: 'Шопоголик',
+        description: 'Купите 5 улучшений',
+        reward: 500,
+        requirement: 5,
+        type: 'purchases',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 8,
+        icon: '',
+        title: 'Коллекционер',
+        description: 'Купите 10 улучшений',
+        reward: 1000,
+        requirement: 10,
+        type: 'purchases',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 9,
+        icon: '',
+        title: 'Энергичный старт',
+        description: 'Достигните 10 кликов в секунду',
+        reward: 2000,
+        requirement: 10,
+        type: 'cps',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 10,
+        icon: '',
+        title: 'Скоростной кликер',
+        description: 'Достигните 100 кликов в секунду',
+        reward: 5000,
+        requirement: 100,
+        type: 'cps',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 11,
+        icon: '',
+        title: 'Звездный путь',
+        description: 'Достигните 1000 кликов в секунду',
+        reward: 10000,
+        requirement: 1000,
+        type: 'cps',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 12,
+        icon: '',
+        title: 'Мировое господство',
+        description: 'Достигните 10000 кликов в секунду',
+        reward: 50000,
+        requirement: 10000,
+        type: 'cps',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 13,
+        icon: '',
+        title: 'Игровой марафон',
+        description: 'Играйте 1 час',
+        reward: 1000,
+        requirement: 3600,
+        type: 'time',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 14,
+        icon: '',
+        title: 'Временной магнат',
+        description: 'Играйте 24 часа',
+        reward: 10000,
+        requirement: 86400,
+        type: 'time',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 15,
+        icon: '',
+        title: 'Быстрый рост',
+        description: 'Получите 1000 кликов за час',
+        reward: 500,
+        requirement: 1000,
+        type: 'hourly',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 16,
+        icon: '',
+        title: 'Богатство',
+        description: 'Получите 10000 кликов за час',
+        reward: 2000,
+        requirement: 10000,
+        type: 'hourly',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 17,
+        icon: '',
+        title: 'Фабрика кликов',
+        description: 'Получите 100000 кликов за час',
+        reward: 10000,
+        requirement: 100000,
+        type: 'hourly',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 18,
+        icon: '',
+        title: 'Точность',
+        description: 'Кликните 100 раз подряд',
+        reward: 1000,
+        requirement: 100,
+        type: 'streak',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 19,
+        icon: '',
+        title: 'Цирковой артист',
+        description: 'Кликните 1000 раз подряд',
+        reward: 5000,
+        requirement: 1000,
+        type: 'streak',
+        claimed: false,
+        isNew: true
+    },
+    {
+        id: 20,
+        icon: '',
+        title: 'Радужный путь',
+        description: 'Соберите все достижения',
+        reward: 100000,
+        requirement: 19,
+        type: 'total_achievements',
+        claimed: false,
+        isNew: true
+    }
+];
+
+let vibrationEnabled = true;
+
+document.getElementById('vibrationToggle').addEventListener('change', function() {
+    vibrationEnabled = this.checked;
+    localStorage.setItem('vibrationEnabled', vibrationEnabled);
+    showNotification(`Вибрация ${vibrationEnabled ? 'включена' : 'выключена'}`);
+});
+
+function showChangelog() {
+    const modal = document.getElementById('changelogModal');
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; padding-top: 20px;">
+                <div class="development-header" style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, rgba(255, 51, 102, 0.2) 0%, rgba(255, 51, 102, 0.1) 100%); padding: 15px 30px; border-radius: 20px; border: 2px solid rgba(255, 51, 102, 0.5); backdrop-filter: blur(5px);">
+                    <h3 style="margin: 0; color: white; font-size: 24px;">Раздел в разработке</h3>
+                </div>
+                <img src="https://i.postimg.cc/5NHn3gzK/free-icon-web-development-1352837.png" 
+                     alt="Development" 
+                     style="width: 300px; 
+                            height: 300px; 
+                            object-fit: contain;
+                            filter: drop-shadow(0 0 20px rgba(255, 51, 102, 0.3));">
+                <button class="close-btn" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 24px; cursor: pointer;">×</button>
+            </div>
+        </div>
+    `;
+    modal.style.display = 'block';
+
+    // Add event listener for the new close button
+    const closeBtn = modal.querySelector('.close-btn');
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+}
+
+function closeChangelog() {
+    document.getElementById('changelogModal').style.display = 'none';
+}
+
+document.getElementById('changelogBtn').addEventListener('click', showChangelog);
+
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('changelogModal');
+    const btn = document.getElementById('changelogBtn');
+    if (e.target !== modal && !modal.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+        modal.style.display = 'none';
+    }
+});
+
+function updateShopItems() {
+    const shopGrid = document.querySelector('.shop-grid');
+    shopGrid.innerHTML = shopItems.map(item => `
+        <div class="shop-item">
+            <span class="shop-item-new">LVL ${item.level}</span>
+            <div class="shop-item-icon">${item.icon}</div>
+            <div class="shop-item-title">${item.title}</div>
+            <div class="shop-item-description">${item.description}</div>
+            <div class="shop-item-price">
+                ${formatNumber(item.price)} <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" style="width: 16px; height: 16px; vertical-align: middle;">
+            </div>
+            <button class="shop-item-button" data-item-id="${item.id}">
+                Улучшить
+            </button>
+        </div>
+    `).join('');
+}
+
+function updateScoreDisplay() {
+    scoreElement.innerHTML = `
+        <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" alt="Coins">
+        ${formatNumber(Math.floor(score))}
+    `;
+}
+
+function updateGame() {
+    const now = Date.now();
+    const deltaTime = (now - lastUpdateTime) / 1000; // Convert to seconds
+    lastUpdateTime = now;
+    
+    // Add income based on time passed
+    score += autoClickPower * deltaTime;
+    
+    // Update display
+    updateScoreDisplay();
+    
+    // Save state periodically
+    if (now - lastSaveTime > 5000) { // Save every 5 seconds
+        saveGameState();
+        lastSaveTime = now;
+    }
+    
+    requestAnimationFrame(updateGame);
+}
+
+function purchaseItem(itemId) {
+    const item = shopItems.find(i => i.id === itemId);
+    if (!item) return;
+
+    // Update purchase check to remove disabled state check
+    if (Math.floor(score) < item.price) {
+        showNotification(`Недостаточно для покупки ${item.title}`);
+        return;
+    }
+
+    score -= item.price;
+    item.level++;
+    item.price = Math.floor(item.basePrice * Math.pow(1.2, item.level));
+    autoClickPower += item.power;
+    
+    updateScoreDisplay();
+    updateShopItems();
+    showNotification(`Улучшение "${item.title}" куплено! Уровень: ${item.level}`);
+}
+
+// Update tasks claim button state
+function claimTask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || task.claimed) return;
+
+    let canClaim = canClaimTask(task);
+
+    if (!canClaim) {
+        showNotification('Условия задания еще не выполнены');
+        return;
+    }
+
+    task.claimed = true;
+    score += task.reward;
+    totalEarned += task.reward;
+    if (score > maxBalance) maxBalance = score;
+    
+    showNotification(`Задание "${task.title}" выполнено! +${formatNumber(task.reward)} кликов`);
+    updateScoreDisplay();
+    
+    const tasksGrid = document.querySelector('.tasks-grid');
+    if (tasksGrid) {
+        tasksGrid.innerHTML = renderTasks();
+    }
+    
+    saveGameState();
+}
+
+function saveGameState() {
+    if (!tg?.initDataUnsafe?.user?.id) return;
+    
+    const now = Date.now();
+    const gameState = {
+        score: Math.floor(score),
+        autoClickPower,
+        lastUpdateTime: now,
+        shopItems,
+        tasks,
+        totalClicks: Math.floor(totalClicks),
+        maxBalance: Math.floor(maxBalance),
+        totalEarned: Math.floor(totalEarned)
+    };
+    
+    localStorage.setItem(`gameState_${tg.initDataUnsafe.user.id}`, JSON.stringify(gameState));
+}
+
+function loadGameState() {
+    if (!tg?.initDataUnsafe?.user?.id) return;
+    
+    const savedState = localStorage.getItem(`gameState_${tg.initDataUnsafe.user.id}`);
+    if (savedState) {
+        const state = JSON.parse(savedState);
+        const now = Date.now();
+        
+        // Calculate offline progress
+        if (state.lastUpdateTime) {
+            const offlineTime = (now - state.lastUpdateTime) / 1000; // Convert to seconds
+            const offlineEarnings = state.autoClickPower * offlineTime;
+            state.score += offlineEarnings;
+            
+            if (offlineEarnings > 0) {
+                showNotification(`Вы заработали ${formatNumber(Math.floor(offlineEarnings))} пока были офлайн!`);
+            }
+        }
+        
+        score = state.score || 0;
+        autoClickPower = state.autoClickPower || 0;
+        shopItems = state.shopItems || shopItems;
+        tasks = state.tasks || tasks;
+        totalClicks = state.totalClicks || 0;
+        maxBalance = state.maxBalance || 0;
+        totalEarned = state.totalEarned || 0;
+        
+        updateScoreDisplay();
+        updateShopItems();
+        
+        const tasksGrid = document.querySelector('.tasks-grid');
+        if (tasksGrid) {
+            tasksGrid.innerHTML = renderTasks();
+        }
+    }
+    
+    lastUpdateTime = Date.now();
+}
+
+function updateStatsSection() {
+    const statsSection = document.getElementById('stats-section');
+    if (!statsSection) return;
+    
+    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+    const perHour = Math.floor(autoClickPower * 3600);
+    
+    statsSection.innerHTML = `
+        <div class="profile-container">
+            <div class="profile-header">
+                <img class="profile-photo" src="https://i.postimg.cc/qM9QZKXJ/free-icon-boy-avatar-17479088.png" alt="Profile Photo">
+                <div class="profile-info">
+                    <div id="username">${user?.username || 'Anonymous User'}</div>
+                    <div id="userId">ID: ${user?.id || 'Unknown'}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stats-item">
+                <div style="font-size: 24px; color: #0088ff;">
+                    <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" style="width: 24px; height: 24px; vertical-align: middle;"> 
+                    ${formatNumber(Math.floor(maxBalance))}
+                </div>
+                <div style="color: #fff; margin-top: 5px;">Максимальный баланс</div>
+            </div>
+            
+            <div class="stats-item">
+                <div style="font-size: 24px; color: #0088ff;">
+                    <img src="https://i.postimg.cc/5yjT8FLh/image.png" style="width: 24px; height: 24px; vertical-align: middle;">
+                    ${formatNumber(perHour)}/час
+                </div>
+                <div style="color: #fff; margin-top: 5px;">Прибыль в час</div>
+            </div>
+            
+            <div class="stats-item">
+                <div style="font-size: 24px; color: #0088ff;">
+                    <img src="https://i.postimg.cc/mrTkbdNm/coin-us-dollar-40536.png" style="width: 24px; height: 24px; vertical-align: middle;">
+                    ${formatNumber(totalClicks)}
+                </div>
+                <div style="color: #fff; margin-top: 5px;">Всего монет</div>
+            </div>
+            
+            <div class="stats-item">
+                <div style="font-size: 24px; color: #0088ff;">
+                    <img src="https://i.postimg.cc/65HRHjFJ/image.png" style="width: 24px; height: 24px; vertical-align: middle;">
+                    ${formatNumber(totalEarned)}
+                </div>
+                <div style="color: #fff; margin-top: 5px;">Всего заработано</div>
+            </div>
+        </div>
+    `;
+}
+
+function initializeNavigation() {
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section-content');
+    const changelogBtn = document.getElementById('changelogBtn');
+
+    navBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            // Remove active class and reset background from all buttons
+            navBtns.forEach(b => {
+                b.classList.remove('active');
+                b.style.background = '#1c1c2e'; 
+            });
+            
+            sections.forEach(s => s.classList.remove('active'));
+            
+            btn.classList.add('active');
+            btn.style.background = '#ff3366'; // Changed from #28a745 to match red theme
+            
+            const btnText = btn.textContent.trim().toLowerCase();
+            
+            if (btnText === 'главная') {
+                sections.forEach(s => s.classList.remove('active'));
+                changelogBtn.style.display = 'flex';
             } else {
-                card.classList.remove('visible');
-                setTimeout(() => {
-                    card.style.display = 'none';
-                }, 300);
+                changelogBtn.style.display = 'none';
+                if (btnText === 'магазин') {
+                    document.getElementById('shop-section').classList.add('active');
+                } else if (btnText === 'награды' || btnText === 'город' || btnText === 'инвестиции') {
+                    document.getElementById('development-section').classList.add('active');
+                    // Update development section content
+                    document.getElementById('development-section').innerHTML = `
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; padding-top: 20px;">
+                            <div class="development-header" style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, rgba(255, 51, 102, 0.2) 0%, rgba(255, 51, 102, 0.1) 100%); padding: 15px 30px; border-radius: 20px; border: 2px solid rgba(255, 51, 102, 0.5); backdrop-filter: blur(5px);">
+                                <h3 style="margin: 0; color: white; font-size: 24px;">Раздел в разработке</h3>
+                            </div>
+                            <img src="https://i.postimg.cc/5NHn3gzK/free-icon-web-development-1352837.png" 
+                                 alt="Development" 
+                                 style="width: 300px; 
+                                        height: 300px; 
+                                        object-fit: contain;
+                                        filter: drop-shadow(0 0 20px rgba(255, 51, 102, 0.3));">
+                        </div>
+                    `;
+                } else if (btnText === 'задания') {
+                    document.getElementById('tasks-section').classList.add('active');
+                } else if (btnText === 'настройки') {
+                    document.getElementById('settings-section').classList.add('active');
+                    document.getElementById('settings-section').innerHTML = `
+                        <div class="settings-options" style="margin-top: 20px; background: rgba(0, 136, 255, 0.1); padding: 20px; border-radius: 15px;">
+                            <div class="settings-option" style="display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <img src="https://i.postimg.cc/nVTK9hF1/image.png" style="width: 24px; height: 24px;">
+                                    <div>
+                                        <h3 style="margin-bottom: 5px;">Вибрация</h3>
+                                        <p style="font-size: 14px; color: #aaa;">Включить вибрацию при клике</p>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch" style="position: relative; display: inline-block; width: 60px; height: 34px;">
+                                    <input type="checkbox" id="vibrationToggle" checked style="opacity: 0; width: 0; height: 0;">
+                                    <span class="toggle-slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;">
+                                        <span style="position: absolute; content: ''; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .2s; border-radius: 50%;"></span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                } else if (btnText === 'статистика') {
+                    document.getElementById('stats-section').classList.add('active');
+                    updateStatsSection();
+                }
             }
         });
     });
 }
 
-function updateLanguageSwitcher() {
-    const languageSwitcher = document.querySelector('.language-switcher');
-    languageSwitcher.innerHTML = `
-        <button class="lang-btn" data-lang="ru" ${currentLang === 'ru' ? 'active' : ''}>
-            <svg viewBox="0 0 640 480">
-                <path fill="#fff" d="M0 0h640v480H0z"/>
-                <path fill="#0039A6" d="M0 160h640v320H0z"/>
-                <path fill="#D52B1E" d="M0 320h640v160H0z"/>
-            </svg>
-        </button>
-        <button class="lang-btn" data-lang="en" ${currentLang === 'en' ? 'active' : ''}>
-            <svg viewBox="0 0 640 480">
-                <path fill="#012169" d="M0 0h640v480H0z"/>
-                <path fill="#FFF" d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"/>
-                <path fill="#C8102E" d="M424 281l216 159v40L369 281h55zm-184 20l6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"/>
-                <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"/>
-                <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"/>
-            </svg>
-        </button>
-        <button class="lang-btn" data-lang="kk" ${currentLang === 'kk' ? 'active' : ''}>
-            <svg viewBox="0 0 640 480">
-                <path fill="#00AFE5" d="M0 0h640v480H0z"/>
-                <path fill="#FFF" d="M320 91c-74 0-134 60-134 134s60 134 134 134 134-60 134-134-60-134-134-134zm0 244c-61 0-110-49-110-110s49-110 110-110 110 49 110 110-49 110-110 110z"/>
-                <path fill="#FFF" d="M320 157l9 29h31l-25 18 10 29-25-18-25 18 10-29-25-18h31z"/>
-            </svg>
-        </button>
-    `;
-
-    languageSwitcher.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentLang = btn.dataset.lang;
-            updateLanguageSwitcher();
-            updatePage();
-        });
-    });
-}
-
-function updatePage() {
-    // Update document title
-    document.title = `${translations[currentLang].title} - ${translations[currentLang].page} ${currentPage}/5`;
-    
-    // Update search placeholder
-    const searchInput = document.querySelector('.search-input');
-    if (searchInput) {
-        searchInput.placeholder = translations[currentLang].searchPlaceholder;
-    }
-    
-    // Update notification text
-    const notification = document.getElementById('notification');
-    if (notification) {
-        notification.textContent = translations[currentLang].copied;
-    }
-    
-    // Update pagination text
-    const pageCounter = document.querySelector('.page-counter');
-    if (pageCounter) {
-        pageCounter.textContent = `${translations[currentLang].page} ${currentPage}/5`;
-    }
-
-    // Update all color names in the grid
-    const colorNames = document.querySelectorAll('.color-name');
-    colorNames.forEach(nameElement => {
-        const originalName = nameElement.getAttribute('data-original-name');
-        if (originalName) {
-            nameElement.textContent = translations[currentLang].colors[originalName] || originalName;
+document.body.addEventListener('change', function(e) {
+    if (e.target.id === 'vibrationToggle') {
+        vibrationEnabled = e.target.checked;
+        localStorage.setItem('vibrationEnabled', vibrationEnabled);
+        showNotification(`Вибрация ${vibrationEnabled ? 'включена' : 'выключена'}`);
+        
+        // Test vibration when enabled
+        if (vibrationEnabled) {
+            try {
+                window.navigator.vibrate(15);
+            } catch (e) {
+                console.log('Vibration test failed:', e);
+            }
         }
-    });
-
-    // Force grid update to refresh all translations
-    updateColorGrid();
-}
-
-let currentPage = 1;
-
-function updatePagination() {
-    const pagination = document.getElementById('pagination');
-    const totalPages = colorPages.length;
-    
-    pagination.innerHTML = `
-        <button class="arrow-btn" onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>
-            <svg width="24" height="24" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-            </svg>
-        </button>
-        <div class="page-counter">${translations[currentLang].page} ${currentPage}/${totalPages}</div>
-        <button class="arrow-btn" onclick="changePage(1)" ${currentPage === totalPages ? 'disabled' : ''}>
-            <svg width="24" height="24" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
-            </svg>
-        </button>
-    `;
-}
-
-function changePage(delta) {
-    const totalPages = colorPages.length;
-    const newPage = currentPage + delta;
-    
-    if (newPage >= 1 && newPage <= totalPages) {
-        currentPage = newPage;
-        updatePagination();
-        updateColorGrid();
-        document.title = `${translations[currentLang].title} - ${translations[currentLang].page} ${currentPage}/${totalPages}`;
-        
-        // Scroll to top smoothly
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
     }
-}
-
-function updateColorGrid() {
-    const grid = document.getElementById('colorGrid');
-    grid.classList.add('fade-out');
-    
-    setTimeout(() => {
-        grid.innerHTML = '';
-        const colors = colorPages[currentPage - 1];
-        
-        colors.forEach((color, index) => {
-            const translatedName = translations[currentLang].colors[color.name] || color.name;
-            const card = document.createElement('div');
-            card.className = 'color-card';
-            card.innerHTML = `
-                <div class="sphere-container">
-                    <div class="sphere" style="--sphere-color: ${color.hex}"></div>
-                </div>
-                <div class="color-info">
-                    <div class="color-name" data-original-name="${color.name}">${translatedName}</div>
-                    <div class="color-hex" onclick="copyToClipboard('${color.hex}')">
-                        ${color.hex}
-                        <svg class="copy-icon" viewBox="0 0 24 24">
-                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                        </svg>
-                    </div>
-                </div>
-            `;
-            
-            grid.appendChild(card);
-            
-            setTimeout(() => {
-                card.classList.add('visible');
-            }, index * 50);
-        });
-        
-        grid.classList.remove('fade-out');
-        grid.classList.add('fade-in');
-    }, 300);
-}
-
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        const notification = document.getElementById('notification');
-        notification.style.opacity = '1';
-        setTimeout(() => {
-            notification.style.opacity = '0';
-        }, 2000);
-    });
-}
+});
 </script>
 </body></html>
