@@ -14,6 +14,42 @@ document.addEventListener('DOMContentLoaded', function() {
     window.totalHourlyRate = 10;
     window.purchasedCards = []; // Массив для хранения купленных карт
 
+    // Функция для сохранения данных
+    function saveGameData() {
+        localStorage.setItem('balance', clickCount);
+        localStorage.setItem('purchasedCards', JSON.stringify(window.purchasedCards));
+        localStorage.setItem('energy', energy);
+    }
+
+    // Функция для загрузки сохраненных данных
+    function loadGameData() {
+        const savedBalance = localStorage.getItem('balance');
+        const savedPurchasedCards = localStorage.getItem('purchasedCards');
+        const savedEnergy = localStorage.getItem('energy');
+
+        if (savedBalance) {
+            clickCount = parseInt(savedBalance);
+            balanceElement.textContent = Math.floor(clickCount);
+        }
+
+        if (savedPurchasedCards) {
+            window.purchasedCards = JSON.parse(savedPurchasedCards);
+        }
+
+        if (savedEnergy) {
+            energy = parseInt(savedEnergy);
+            updateEnergy();
+        }
+    }
+
+    // Загружаем данные при старте
+    loadGameData();
+
+    // Сохраняем данные перед закрытием страницы
+    window.addEventListener('beforeunload', () => {
+        saveGameData();
+    });
+
     // Загружаем сохраненные данные при старте
     if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
         const userData = window.telegramAuth.loadUserData();
@@ -56,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
             window.telegramAuth.saveBalance(clickCount);
         }
+        saveGameData();
     }, 1000);
 
     // Восстановление энергии каждую секунду
@@ -68,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
                 window.telegramAuth.saveEnergy(energy);
             }
+            saveGameData();
         }
     }, 1000);
 
@@ -294,6 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
             window.telegramAuth.saveBalance(clickCount);
         }
+        saveGameData();
     });
 
     // Функция для показа уведомления
@@ -356,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: "https://res.cloudinary.com/dib4woqge/image/upload/v1735300135/1000000472_wu48p4.png",
                 title: "Начало пути",
                 description: "Коала только начинает своё путешествие. Даёт 120 эвкалипта в час",
-                price: "1",
+                price: "10000",
                 perHour: 120
             },
             {
@@ -364,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: "https://i.postimg.cc/sxpJmh0S/image.png",
                 title: "Первые деньги",
                 description: "Коала заработала свои первые деньги. Продолжаем в том же духе. Добавляет 350 эвкалипта в час",
-                price: "1",
+                price: "25000",
                 perHour: 350
             },
 
@@ -373,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: "https://i.postimg.cc/pVwWnFHC/image.png",
                 title: "Коала на отдыхе",
                 description: "После первых заработанных денег можно хорошенько отдохнуть. Добавляет 800 эвкалипта в час",
-                price: "1",
+                price: "35000",
                 perHour: 800
             },
             {
@@ -381,8 +420,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: "https://i.postimg.cc/nLCgk3KD/image.png",
                 title: "Снежные забавы",
                 description: "Наступила зима, а значит можно хорошо порезвиться в снежки. Но не забываем про прибыль в 1800 эвкалипта в час",
-                price: "1",
+                price: "50000",
                 perHour: 1800
+            },
+            {
+                id: 5,
+                image: "https://i.postimg.cc/wTxjfh3V/Leonardo-Phoenix-10-A-vibrant-whimsical-illustration-of-Koala-2.jpg",
+                title: "Коала-путешественник",
+                description: "Наша коала отправляется в кругосветное путешествие, собирая эвкалипт по всему миру. Приносит 3500 эвкалипта в час",
+                price: "75000",
+                perHour: 3500,
+                isNew: true
+            },
+            {
+                id: 6,
+                image: "https://i.postimg.cc/3JnrGd8c/Leonardo-Phoenix-10-A-whimsical-digital-illustration-of-a-koal-0.jpg",
+                title: "Бизнес-коала",
+                description: "Пора открывать свой бизнес! Коала в деловом костюме управляет сетью эвкалиптовых плантаций. Добавляет 7000 эвкалипта в час",
+                price: "100000",
+                perHour: 7000,
+                isNew: true
+            },
+            {
+                id: 7,
+                image: "https://i.postimg.cc/zvqbJ67b/Leonardo-Phoenix-10-A-vibrant-whimsical-illustration-of-Space-0.jpg",
+                title: "Космический исследователь",
+                description: "Коала покоряет космос в поисках редких видов эвкалипта на других планетах. Приносит 12000 эвкалипта в час",
+                price: "150000",
+                perHour: 12000,
+                isNew: true
+            },
+            {
+                id: 8,
+                image: "https://i.postimg.cc/bv23bSh0/Leonardo-Phoenix-10-In-a-whimsical-vibrant-illustration-depict-0.jpg",
+                title: "Коала-волшебник",
+                description: "Магия и эвкалипт - отличное сочетание! Коала освоила древние заклинания приумножения эвкалипта. Добавляет 20000 эвкалипта в час",
+                price: "200000",
+                perHour: 20000,
+                isNew: true
             }
         ];
 
@@ -448,6 +523,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         showNotification('Недостаточно средств для покупки!');
                     }
                 });
+            }
+
+            if (card.isNew) {
+                const newLabel = document.createElement('div');
+                newLabel.className = 'new-label';
+                newLabel.textContent = 'New';
+                cardElement.appendChild(newLabel);
             }
 
             return cardElement;

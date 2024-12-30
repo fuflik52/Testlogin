@@ -91,8 +91,16 @@
     </div>
 
     <script src="telegram.js"></script>
+    <script src="background.js"></script>
     <script src="script.js"></script>
-
     <script src="snow.js"></script>
+    <script>
+        // Проверяем, пришли ли мы с loading.html
+        if (!sessionStorage.getItem('loaded')) {
+            window.location.href = 'loading.html';
+        } else {
+            sessionStorage.removeItem('loaded');
+        }
+    </script>
 </body>
 </html>
