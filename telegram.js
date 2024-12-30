@@ -1,33 +1,42 @@
 // Импортируем конфигурацию
-import { TELEGRAM_BOT_TOKEN } from './config.js';
+// import { TELEGRAM_BOT_TOKEN } from './config.js';
+
+// Инициализируем Telegram Web App
+const tg = window.Telegram.WebApp;
+tg.expand();
 
 class TelegramAuth {
     constructor() {
         this.username = '';
+        this.telegramId = '';
         this.isAuthenticated = false;
-        this.initTelegramLogin();
+        this.purchasedItems = [];
+        this.lastCollectTime = Date.now();
+        this.initTelegramAuth();
     }
 
-    initTelegramLogin() {
-        // Добавляем скрипт Telegram Widget
-        const script = document.createElement('script');
-        script.src = 'https://telegram.org/js/telegram-widget.js?22';
-        script.setAttribute('data-telegram-login', 'CookieClicket_Bot'); // Замените на имя вашего бота
-        script.setAttribute('data-size', 'large');
-        script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-        script.setAttribute('data-request-access', 'write');
-        document.head.appendChild(script);
-
-        // Добавляем обработчик авторизации
-        window.onTelegramAuth = (user) => {
+    initTelegramAuth() {
+        // Получаем данные пользователя из Telegram Web App
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
             this.handleTelegramAuth(user);
-        };
+        }
+
+        // Логируем события Telegram Web App
+        console.log('[Telegram.WebApp] Initialized');
+        tg.onEvent('viewportChanged', () => {
+            console.log('[Telegram.WebApp] Viewport changed');
+        });
     }
 
     handleTelegramAuth(user) {
-        if (user && user.username) {
-            this.username = user.username;
+        if (user && user.id) {
+            this.username = user.username || user.first_name;
+            this.telegramId = user.id;
             this.isAuthenticated = true;
+            
+            // Загружаем сохраненные данные
+            this.loadUserData();
             
             // Обновляем имя пользователя на странице
             const usernameElement = document.querySelector('.username');
@@ -36,20 +45,60 @@ class TelegramAuth {
             }
 
             // Сохраняем данные в localStorage
-            localStorage.setItem('telegramUsername', this.username);
+            this.saveUserData();
             
-            // Вызываем событие для оповещения других частей приложения
-            const event = new CustomEvent('telegramAuth', { detail: user });
-            document.dispatchEvent(event);
+            console.log('[Telegram.WebApp] User authenticated:', this.username);
         }
+    }
+
+    saveUserData() {
+        const userData = {
+            username: this.username,
+            telegramId: this.telegramId,
+            purchasedItems: this.purchasedItems,
+            lastCollectTime: this.lastCollectTime
+        };
+        localStorage.setItem(`userData_${this.telegramId}`, JSON.stringify(userData));
+    }
+
+    loadUserData() {
+        const userData = localStorage.getItem(`userData_${this.telegramId}`);
+        if (userData) {
+            const data = JSON.parse(userData);
+            this.purchasedItems = data.purchasedItems || [];
+            this.lastCollectTime = data.lastCollectTime || Date.now();
+            window.purchasedCards = this.purchasedItems; // Синхронизируем с глобальным состоянием
+        }
+    }
+
+    addPurchasedItem(item) {
+        this.purchasedItems.push(item);
+        this.saveUserData();
+    }
+
+    updateLastCollectTime() {
+        this.lastCollectTime = Date.now();
+        this.saveUserData();
+    }
+
+    getTimeAwayEarnings() {
+        const currentTime = Date.now();
+        const timeAway = (currentTime - this.lastCollectTime) / 1000; // в секундах
+        const hourlyRate = window.totalHourlyRate || 0;
+        const earnings = (hourlyRate / 3600) * timeAway;
+        return earnings;
     }
 
     // Проверяем, был ли пользователь уже авторизован
     checkExistingAuth() {
-        const savedUsername = localStorage.getItem('telegramUsername');
+        const savedUsername = localStorage.getItem(`userData_${this.telegramId}`);
         if (savedUsername) {
-            this.username = savedUsername;
+            const data = JSON.parse(savedUsername);
+            this.username = data.username;
+            this.telegramId = data.telegramId;
             this.isAuthenticated = true;
+            this.purchasedItems = data.purchasedItems || [];
+            this.lastCollectTime = data.lastCollectTime || Date.now();
             
             const usernameElement = document.querySelector('.username');
             if (usernameElement) {
@@ -63,8 +112,11 @@ class TelegramAuth {
     // Выход из аккаунта
     logout() {
         this.username = '';
+        this.telegramId = '';
         this.isAuthenticated = false;
-        localStorage.removeItem('telegramUsername');
+        this.purchasedItems = [];
+        this.lastCollectTime = Date.now();
+        localStorage.removeItem(`userData_${this.telegramId}`);
         
         const usernameElement = document.querySelector('.username');
         if (usernameElement) {
@@ -74,10 +126,9 @@ class TelegramAuth {
 }
 
 // Создаем и экспортируем экземпляр класса
-const telegramAuth = new TelegramAuth();
-export default telegramAuth;
+window.telegramAuth = new TelegramAuth();
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    telegramAuth.checkExistingAuth();
+    window.telegramAuth.checkExistingAuth();
 });

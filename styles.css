@@ -18,9 +18,23 @@ body {
     width: 100%;
     max-width: 390px;
     height: 100vh;
-    background-color: #1a2c1a;
+    background-color: rgba(26, 44, 26, 0.8);
     overflow: hidden;
     position: relative;
+}
+
+.mobile-frame::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('https://i.postimg.cc/NfRtgtgN/bg.png');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.5);
+    z-index: -1;
 }
 
 .container {
@@ -29,13 +43,20 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
+    z-index: 1;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 15px 15px;
+    position: sticky;
+    top: 10px;
+    background-color: rgba(26, 44, 26, 0.95);
+    z-index: 100;
+    border-radius: 15px;
+    margin: 0 10px;
 }
 
 .user-info {
@@ -76,36 +97,68 @@ body {
 }
 
 .game-area {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    min-height: 250px;
-    max-height: 300px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 390px;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .main-circle {
-    width: 160px;
-    height: 160px;
-    background-color: #28a745;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+    width: 200px;
+    height: 200px;
     position: relative;
-    transition: transform 0.1s, opacity 0.3s;
+    cursor: pointer;
+    transition: transform 0.1s;
+    pointer-events: auto;
+    margin: 0 auto;
 }
 
-.main-circle img {
+.main-circle:active {
+    transform: scale(0.95);
+}
+
+.circle-gradient {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #2BBE56, #0E2615);
+}
+
+.circle-gradient-inner {
+    position: absolute;
+    width: 168px;
+    height: 168px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(59.42% 53.02% at 50% 46.98%, #2BBE56 38.7%, #0E2615 100%);
+}
+
+.koala-img {
+    position: absolute;
     width: 80%;
     height: 80%;
-    object-fit: contain;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
 }
 
 .progress-container {
-    margin: 15px 0;
+    position: fixed;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    z-index: 10;
+    max-width: 390px;
+    padding: 0 15px;
 }
 
 .energy-info {
@@ -113,6 +166,7 @@ body {
     align-items: center;
     gap: 5px;
     margin-bottom: 5px;
+    padding-left: 5px;
 }
 
 .energy-icon {
@@ -120,12 +174,18 @@ body {
     height: 20px;
 }
 
+.progress-text {
+    color: white;
+    font-size: 14px;
+}
+
 .progress-bar {
     width: 100%;
     height: 10px;
-    background-color: #2d4d2d;
+    background-color: rgba(45, 77, 45, 0.8);
     border-radius: 5px;
     overflow: hidden;
+    position: relative;
 }
 
 .progress {
@@ -133,15 +193,36 @@ body {
     height: 100%;
     background-color: #28a745;
     transition: width 0.3s;
+    position: relative;
+}
+
+.progress-stripes {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    mix-blend-mode: overlay;
+    opacity: 0.2;
+}
+
+.stripe {
+    position: absolute;
+    width: 73.54px;
+    height: 0;
+    border-top: 5px solid white;
+    transform: rotate(-45deg);
+    top: 5px;
 }
 
 .bottom-nav {
     display: flex;
     justify-content: space-between;
-    background-color: #1a2c1a;
+    background-color: #000000;
     padding: 10px 20px;
     border-radius: 15px;
     margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
 }
 
 .nav-item {
@@ -172,7 +253,14 @@ body {
     align-items: center;
     gap: 5px;
     opacity: 0;
-    transition: opacity 0.3s;
+    pointer-events: none;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.click-info.show {
+    animation: floatAndFade 0.8s ease-out forwards;
 }
 
 .click-icon {
@@ -180,48 +268,124 @@ body {
     height: 20px;
 }
 
-.reward-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-}
-
 .reward-frame {
-    background-color: #143014;
+    background-color: #262626;
     padding: 20px;
     border-radius: 15px;
     text-align: center;
+    margin-top: 15px;
+    display: none;
 }
 
-.reward-img {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 10px;
+.reward-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-.reward-info {
+.reward-amount {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 5px;
-    margin-bottom: 10px;
+    gap: 8px;
 }
 
-.coin-icon {
-    width: 20px;
-    height: 20px;
+.token-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.reward-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
 }
 
 .collect-btn {
     background-color: #28a745;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 12px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 10px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.earnings-popup {
+    animation: slideUp 0.3s ease-out;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.collect-btn {
+    background-color: #2BBE56;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.collect-btn:hover {
+    background-color: #249c47;
+}
+
+@keyframes floatAndFade {
+    0% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.main-circle.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.section-content {
+    min-height: 100vh;
+    padding-top: 70px;
+    padding-bottom: 140px;
+}
+
+.snowflake {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    pointer-events: none;
+    top: -10px;
+    animation: fall linear forwards;
+    z-index: 1000;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(105vh);
+    }
 }
 
 @media (max-height: 700px) {
