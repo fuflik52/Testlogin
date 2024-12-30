@@ -50,41 +50,61 @@ class TelegramAuth {
         }
     }
 
-    saveUserData() {
+    async saveUserData() {
         if (!this.isAuthenticated) return;
         
         const userData = {
-            username: this.username,
             telegramId: this.telegramId,
-            purchasedItems: window.purchasedCards || [],
-            balance: window.clickCount || 0,
-            energy: window.energy || 100,
-            hourlyRate: window.totalHourlyRate || 10
+            username: this.username,
+            balance: window.clickCount,
+            purchasedCards: window.purchasedCards,
+            energy: window.energy,
+            lastPlayed: new Date().toISOString()
         };
-        localStorage.setItem(`userData_${this.telegramId}`, JSON.stringify(userData));
-        console.log('[Telegram.WebApp] Data saved:', userData);
+
+        // Сохраняем данные в localStorage
+        localStorage.setItem('userData', JSON.stringify(userData));
+        
+        // Сохраняем данные в GitHub
+        if (window.githubDB) {
+            await window.githubDB.saveUser(userData);
+        }
     }
 
-    loadUserData() {
-        if (!this.isAuthenticated) return null;
-        
-        const userData = localStorage.getItem(`userData_${this.telegramId}`);
-        if (userData) {
-            const data = JSON.parse(userData);
-            this.purchasedItems = data.purchasedItems || [];
-            this.balance = Number(data.balance) || 0;
-            this.energy = Number(data.energy) || 100;
-            this.hourlyRate = Number(data.hourlyRate) || 10;
-            
-            // Синхронизируем с глобальным состоянием
-            window.purchasedCards = this.purchasedItems;
-            window.totalHourlyRate = this.hourlyRate;
-            window.clickCount = this.balance;
-            
-            console.log('[Telegram.WebApp] Data loaded:', data);
-            return data;
+    async loadUserData() {
+        if (!this.isAuthenticated) return;
+
+        // Пробуем загрузить данные из GitHub
+        let userData = null;
+        if (window.githubDB) {
+            userData = await window.githubDB.getUser(this.telegramId);
         }
-        return null;
+
+        // Если данных нет в GitHub, используем localStorage
+        if (!userData) {
+            const savedData = localStorage.getItem('userData');
+            if (savedData) {
+                userData = JSON.parse(savedData);
+            }
+        }
+
+        if (userData) {
+            window.clickCount = userData.balance || 0;
+            window.purchasedCards = userData.purchasedCards || [];
+            window.energy = userData.energy || 100;
+            
+            // Обновляем интерфейс
+            const balanceElement = document.querySelector('.balance');
+            if (balanceElement) {
+                balanceElement.textContent = Math.floor(window.clickCount);
+            }
+            
+            // Обновляем энергию
+            // updateEnergy();
+            
+            // Обновляем список купленных карт
+            // updatePurchasedCards();
+        }
     }
 
     addPurchasedItem(item) {
@@ -120,13 +140,13 @@ class TelegramAuth {
 
     // Проверяем, был ли пользователь уже авторизован
     checkExistingAuth() {
-        const savedData = localStorage.getItem(`userData_${this.telegramId}`);
+        const savedData = localStorage.getItem('userData');
         if (savedData) {
             const data = JSON.parse(savedData);
             this.username = data.username;
             this.telegramId = data.telegramId;
             this.isAuthenticated = true;
-            this.purchasedItems = data.purchasedItems || [];
+            this.purchasedItems = data.purchasedCards || [];
             this.balance = data.balance || 0;
             this.energy = data.energy || 100;
             
@@ -147,7 +167,7 @@ class TelegramAuth {
         this.purchasedItems = [];
         this.balance = 0;
         this.energy = 100;
-        localStorage.removeItem(`userData_${this.telegramId}`);
+        localStorage.removeItem('userData');
         
         const usernameElement = document.querySelector('.username');
         if (usernameElement) {
