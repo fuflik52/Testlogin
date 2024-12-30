@@ -17,17 +17,15 @@ body {
 .mobile-frame {
     width: 100%;
     max-width: 390px;
-    height: 844px;
+    height: 100vh;
     background-color: #1a2c1a;
-    border-radius: 40px;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .container {
     height: 100%;
-    padding: 20px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -37,7 +35,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding: 10px 0;
 }
 
 .user-info {
@@ -47,8 +45,8 @@ body {
 }
 
 .user-icon {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
 }
 
@@ -68,12 +66,12 @@ body {
 }
 
 .balance-icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }
 
 .balance {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -83,11 +81,13 @@ body {
     align-items: center;
     justify-content: center;
     position: relative;
+    min-height: 250px;
+    max-height: 300px;
 }
 
 .main-circle {
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 160px;
     background-color: #28a745;
     border-radius: 50%;
     display: flex;
@@ -98,24 +98,14 @@ body {
     transition: transform 0.1s, opacity 0.3s;
 }
 
-.main-circle.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: #666;
-}
-
-.main-circle:active:not(.disabled) {
-    transform: scale(0.95);
-}
-
-.koala-img {
+.main-circle img {
     width: 80%;
     height: 80%;
     object-fit: contain;
 }
 
 .progress-container {
-    margin: 20px 0;
+    margin: 15px 0;
 }
 
 .energy-info {
@@ -130,163 +120,85 @@ body {
     height: 20px;
 }
 
-.progress-text {
-    color: #fff;
-    font-size: 14px;
-}
-
 .progress-bar {
     width: 100%;
-    background-color: #2d2d2d;
-    border-radius: 10px;
-    height: 20px;
+    height: 10px;
+    background-color: #2d4d2d;
+    border-radius: 5px;
     overflow: hidden;
 }
 
 .progress {
-    background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
+    width: 100%;
     height: 100%;
-    animation: progressPulse 2s infinite;
-}
-
-@keyframes progressPulse {
-    0% {
-        background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
-    }
-    50% {
-        background: linear-gradient(90deg, #34d058 0%, #28a745 100%);
-    }
-    100% {
-        background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
-    }
-}
-
-.click-info {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 8px 15px;
-    border-radius: 20px;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 100;
-}
-
-.click-info.show {
-    animation: showClickInfo 1s ease-out forwards;
-}
-
-@keyframes showClickInfo {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, 20px);
-    }
-    20% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-    80% {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -20px);
-    }
-}
-
-.click-icon {
-    width: 16px;
-    height: 16px;
-}
-
-.click-value {
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
+    background-color: #28a745;
+    transition: width 0.3s;
 }
 
 .bottom-nav {
-    background-color: #1a1a1a;
     display: flex;
-    justify-content: space-around;
-    padding: 10px 10px;
-    border-top: 1px solid #333;
-    margin: 0 -20px;
-    margin-bottom: -20px;
-    border-radius: 25px 25px 40px 40px;
-}
-
-.nav-icon {
-    width: 28px;
-    height: 28px;
-    margin-bottom: 6px;
-    transition: filter 0.3s;
+    justify-content: space-between;
+    background-color: #1a2c1a;
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin-top: auto;
 }
 
 .nav-item {
-    color: #666;
-    text-decoration: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: 0.9em;
-    padding: 0 15px;
+    text-decoration: none;
+    color: white;
+    gap: 5px;
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.nav-item span {
+    font-size: 12px;
 }
 
 .nav-item.active {
     color: #28a745;
 }
 
-.nav-item.active .nav-icon {
-    filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
-}
-
-.connect-wallet {
-    background-color: #0095ff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 16px;
-    cursor: pointer;
+.click-info {
+    position: absolute;
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin: 20px auto;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-.wallet-icon {
+.click-icon {
     width: 20px;
     height: 20px;
 }
 
 .reward-container {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
 }
 
 .reward-frame {
-    background-color: #1a1a1a;
-    padding: 15px;
+    background-color: #143014;
+    padding: 20px;
+    border-radius: 15px;
     text-align: center;
-    border-radius: 25px;
-    margin: 0 10px 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .reward-img {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 5px;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
 }
 
 .reward-info {
@@ -294,51 +206,40 @@ body {
     align-items: center;
     justify-content: center;
     gap: 5px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .coin-icon {
-    width: 16px;
-    height: 16px;
-}
-
-.reward-value {
-    font-size: 18px;
-    font-weight: bold;
-    color: #28a745;
-}
-
-.reward-text {
-    color: #888;
-    margin-bottom: 10px;
-    font-size: 12px;
+    width: 20px;
+    height: 20px;
 }
 
 .collect-btn {
     background-color: #28a745;
     color: white;
     border: none;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    width: 100%;
+    margin-top: 10px;
 }
 
-.collect-btn:hover {
-    background-color: #34d058;
-}
-
-.telegram-login-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    display: none;
-}
-
-.telegram-login-container.show {
-    display: block;
+@media (max-height: 700px) {
+    .game-area {
+        min-height: 200px;
+        max-height: 250px;
+    }
+    
+    .main-circle {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .header {
+        padding: 5px 0;
+    }
+    
+    .progress-container {
+        margin: 10px 0;
+    }
 }
