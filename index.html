@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Interface</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="mobile-frame">
+        <div class="container">
+            <div class="header">
+                <div class="user-info">
+                    <img src="https://i.postimg.cc/vBBWGZjL/image.png" alt="User" class="user-icon">
+                    <div class="user-details">
+                        <div class="username">Guest</div>
+                        <div class="rate">10/hour</div>
+                    </div>
+                </div>
+                <div class="telegram-login-container"></div>
+                <div class="balance-container">
+                    <img src="https://i.postimg.cc/FFx7T4Bh/image.png" alt="Balance Icon" class="balance-icon">
+                    <div class="balance">0</div>
+                </div>
+            </div>
+
+            <div class="game-area">
+                <div class="main-circle">
+                    <img src="https://i.postimg.cc/XYRKcWrn/image.png" alt="Koala" class="koala-img">
+                </div>
+                <div class="click-info">
+                    <img src="https://i.postimg.cc/FFx7T4Bh/image.png" alt="Click Icon" class="click-icon">
+                    <span class="click-value">+1</span>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="energy-info">
+                    <img src="https://i.postimg.cc/FsZCF7Cw/image.png" alt="Energy" class="energy-icon">
+                    <span class="progress-text">100/100</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+
+            <div class="reward-container">
+                <div class="reward-frame" style="display: none;">
+                    <img src="https://i.postimg.cc/XYRKcWrn/image.png" alt="Koala" class="reward-img">
+                    <div class="reward-info">
+                        <img src="https://i.postimg.cc/FFx7T4Bh/image.png" alt="Coin" class="coin-icon">
+                        <span class="reward-value">0</span>
+                    </div>
+                    <div class="reward-text">Получено за время отсутствия</div>
+                    <button class="collect-btn">Забрать</button>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <a href="#" class="nav-item active">
+                    <img src="https://i.postimg.cc/Y986QWcW/image.png" alt="Home" class="nav-icon">
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <img src="https://i.postimg.cc/bYHMFCPx/image.png" alt="Frens" class="nav-icon">
+                    <span>Frens</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <img src="https://i.postimg.cc/T2C0DZG4/image.png" alt="Cards" class="nav-icon">
+                    <span>Cards</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <img src="https://i.postimg.cc/jd48ZLzZ/image.png" alt="Mining" class="nav-icon">
+                    <span>Mining</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <img src="https://i.postimg.cc/XY2s6m15/image.png" alt="Reward" class="nav-icon">
+                    <span>Reward</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

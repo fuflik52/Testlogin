@@ -1,0 +1,344 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.mobile-frame {
+    width: 100%;
+    max-width: 390px;
+    height: 844px;
+    background-color: #1a2c1a;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.container {
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.username {
+    font-weight: bold;
+}
+
+.rate {
+    font-size: 0.8em;
+    color: #aaa;
+}
+
+.balance-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.balance-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.balance {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.game-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.main-circle {
+    width: 200px;
+    height: 200px;
+    background-color: #28a745;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.1s, opacity 0.3s;
+}
+
+.main-circle.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #666;
+}
+
+.main-circle:active:not(.disabled) {
+    transform: scale(0.95);
+}
+
+.koala-img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+.progress-container {
+    margin: 20px 0;
+}
+
+.energy-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.energy-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.progress-text {
+    color: #fff;
+    font-size: 14px;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #2d2d2d;
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.progress {
+    background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
+    height: 100%;
+    animation: progressPulse 2s infinite;
+}
+
+@keyframes progressPulse {
+    0% {
+        background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
+    }
+    50% {
+        background: linear-gradient(90deg, #34d058 0%, #28a745 100%);
+    }
+    100% {
+        background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
+    }
+}
+
+.click-info {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 15px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.click-info.show {
+    animation: showClickInfo 1s ease-out forwards;
+}
+
+@keyframes showClickInfo {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    80% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+}
+
+.click-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.click-value {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.bottom-nav {
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 10px;
+    border-top: 1px solid #333;
+    margin: 0 -20px;
+    margin-bottom: -20px;
+    border-radius: 25px 25px 40px 40px;
+}
+
+.nav-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 6px;
+    transition: filter 0.3s;
+}
+
+.nav-item {
+    color: #666;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.9em;
+    padding: 0 15px;
+}
+
+.nav-item.active {
+    color: #28a745;
+}
+
+.nav-item.active .nav-icon {
+    filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+}
+
+.connect-wallet {
+    background-color: #0095ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px auto;
+}
+
+.wallet-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.reward-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.reward-frame {
+    background-color: #1a1a1a;
+    padding: 15px;
+    text-align: center;
+    border-radius: 25px;
+    margin: 0 10px 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.reward-img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 5px;
+}
+
+.reward-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.coin-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.reward-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.reward-text {
+    color: #888;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.collect-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.collect-btn:hover {
+    background-color: #34d058;
+}
+
+.telegram-login-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    display: none;
+}
+
+.telegram-login-container.show {
+    display: block;
+}
