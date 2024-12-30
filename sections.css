@@ -84,6 +84,13 @@
     gap: 10px;
     padding: 10px 0;
     overflow-y: auto;
+    max-height: calc(100vh - 250px);
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.cards-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
 }
 
 .empty-message {
@@ -150,9 +157,15 @@
 }
 
 .card-price.purchased {
-    background-color: #2BBE56;
-    color: white;
-    cursor: default;
+    background: #1A1B1A !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    cursor: not-allowed;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-price.purchased:hover {
+    background: #1A1B1A !important;
+    transform: none !important;
 }
 
 .card-price.purchased span {

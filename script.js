@@ -14,10 +14,43 @@ document.addEventListener('DOMContentLoaded', function() {
     window.totalHourlyRate = 10;
     window.purchasedCards = []; // Массив для хранения купленных карт
 
+    // Загружаем сохраненные данные при старте
+    if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
+        const userData = window.telegramAuth.loadUserData();
+        if (userData) {
+            clickCount = Number(userData.balance) || 0;
+            energy = Number(userData.energy) || 100;
+            window.purchasedCards = userData.purchasedItems || [];
+            // Обновляем все значения на странице
+            updateTotalHourlyRate();
+            updateEnergy();
+            balanceElement.textContent = Math.floor(clickCount);
+            window.clickCount = clickCount; // Сохраняем в глобальную переменную
+        }
+    }
+
+    // Функция для обновления общей почасовой прибыли
+    function updateTotalHourlyRate() {
+        window.totalHourlyRate = 10; // Базовая прибыль
+        if (window.purchasedCards && window.purchasedCards.length > 0) {
+            window.purchasedCards.forEach(card => {
+                window.totalHourlyRate += Number(card.perHour);
+            });
+        }
+        const rateElement = document.querySelector('.user-info .rate');
+        if (rateElement) {
+            rateElement.textContent = `${window.totalHourlyRate}/hour`;
+        }
+        // Сохраняем данные
+        if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
+            window.telegramAuth.saveUserData();
+        }
+    }
+
     // Обновление баланса каждую секунду
     setInterval(() => {
-        const increment = window.totalHourlyRate / 3600;
-        clickCount += increment;
+        const increment = Number(window.totalHourlyRate || 0) / 3600;
+        clickCount = Number(clickCount) + Number(increment);
         balanceElement.textContent = Math.floor(clickCount);
         // Сохраняем текущий баланс
         if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
@@ -30,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (energy < maxEnergy) {
             energy = Math.min(maxEnergy, energy + energyRegenRate);
             updateEnergy();
+
             // Сохраняем текущую энергию
             if (window.telegramAuth && window.telegramAuth.isAuthenticated) {
                 window.telegramAuth.saveEnergy(energy);
@@ -104,8 +138,68 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.telegramAuth) {
             window.telegramAuth.addPurchasedItem(card);
             window.purchasedCards = window.telegramAuth.purchasedItems;
-            window.totalHourlyRate += card.hourlyRate;
+            updateTotalHourlyRate();
         }
+    }
+
+    // Функция для создания конфетти
+    function createConfetti() {
+        const container = document.querySelector('.container');
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        container.appendChild(confetti);
+
+        // Создаем 80 конфетти (примерно 70% зеленых и 30% белых)
+        for (let i = 0; i < 80; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            
+            // 30% конфетти будут белыми
+            if (i % 3 === 0) {
+                piece.classList.add('white');
+            }
+            
+            // Случайная начальная позиция
+            piece.style.left = (Math.random() * 100) + '%';
+            
+            // Случайные движения по X для каждой точки анимации
+            const moveX1 = (Math.random() - 0.5) * 40;
+            const moveX2 = (Math.random() - 0.5) * 60;
+            const moveX3 = (Math.random() - 0.5) * 80;
+            const moveX4 = (Math.random() - 0.5) * 100;
+            
+            // Случайные отклонения по Y
+            const randomY1 = (Math.random() - 0.5) * 20;
+            const randomY2 = (Math.random() - 0.5) * 30;
+            const randomY3 = (Math.random() - 0.5) * 40;
+            const randomY4 = (Math.random() - 0.5) * 50;
+            
+            // Устанавливаем CSS переменные для анимации
+            piece.style.setProperty('--moveX1', moveX1 + '%');
+            piece.style.setProperty('--moveX2', moveX2 + '%');
+            piece.style.setProperty('--moveX3', moveX3 + '%');
+            piece.style.setProperty('--moveX4', moveX4 + '%');
+            
+            piece.style.setProperty('--randomY1', randomY1 + 'px');
+            piece.style.setProperty('--randomY2', randomY2 + 'px');
+            piece.style.setProperty('--randomY3', randomY3 + 'px');
+            piece.style.setProperty('--randomY4', randomY4 + 'px');
+            
+            // Случайное вращение
+            const rotation = Math.random() * 360 * 3;
+            piece.style.setProperty('--rotation', rotation + 'deg');
+            
+            // Замедленная анимация падения (увеличили время в 2 раза)
+            piece.style.animationDuration = (1 + Math.random() * 1) + 's';
+            piece.style.animationDelay = (Math.random() * 0.4) + 's';
+            
+            confetti.appendChild(piece);
+        }
+
+        // Удаляем конфетти после анимации (увеличили время в 2 раза)
+        setTimeout(() => {
+            confetti.remove();
+        }, 3000);
     }
 
     // Создаем контейнеры для разделов
@@ -202,6 +296,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Функция для показа уведомления
+    function showNotification(message) {
+        // Удаляем предыдущее уведомление, если оно есть
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        // Создаем новое уведомление
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.innerHTML = `
+            <img src="https://i.postimg.cc/FFx7T4Bh/image.png" alt="Token">
+            <span class="notification-text">${message}</span>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Показываем уведомление
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+
+        // Скрываем и удаляем уведомление через 3 секунды
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+
     function createCardsSection() {
         const section = document.createElement('div');
         section.className = 'cards-section';
@@ -230,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: "https://res.cloudinary.com/dib4woqge/image/upload/v1735300135/1000000472_wu48p4.png",
                 title: "Начало пути",
                 description: "Коала только начинает своё путешествие. Даёт 120 эвкалипта в час",
-                price: "10K",
+                price: "1",
                 perHour: 120
             },
             {
@@ -238,15 +364,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: "https://i.postimg.cc/sxpJmh0S/image.png",
                 title: "Первые деньги",
                 description: "Коала заработала свои первые деньги. Продолжаем в том же духе. Добавляет 350 эвкалипта в час",
-                price: "25K",
+                price: "1",
                 perHour: 350
             },
+
             {
                 id: 3,
                 image: "https://i.postimg.cc/pVwWnFHC/image.png",
                 title: "Коала на отдыхе",
                 description: "После первых заработанных денег можно хорошенько отдохнуть. Добавляет 800 эвкалипта в час",
-                price: "50K",
+                price: "1",
                 perHour: 800
             },
             {
@@ -254,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: "https://i.postimg.cc/nLCgk3KD/image.png",
                 title: "Снежные забавы",
                 description: "Наступила зима, а значит можно хорошо порезвиться в снежки. Но не забываем про прибыль в 1800 эвкалипта в час",
-                price: "100K",
+                price: "1",
                 perHour: 1800
             }
         ];
@@ -263,6 +390,10 @@ document.addEventListener('DOMContentLoaded', function() {
         function createCardElement(card, isOwned = false) {
             const cardElement = document.createElement('div');
             cardElement.className = 'card-item';
+
+            // Проверяем, была ли карточка куплена ранее
+            const isPurchased = window.purchasedCards.some(pc => pc.id === card.id);
+            
             cardElement.innerHTML = `
                 <div class="card-image">
                     <img src="${card.image}" alt="${card.title}" class="card-img">
@@ -270,13 +401,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-title">${card.title}</div>
                 <div class="card-description">${card.description}</div>
                 <div class="card-footer">
-                    ${isOwned ? 
-                        '<button class="card-price purchased"><span>Куплено</span></button>' :
-                        `<button class="card-price" data-id="${card.id}" data-rate="${card.perHour}">
-                            <img src="https://i.postimg.cc/FFx7T4Bh/image.png" alt="leaf" class="leaf-icon">
-                            <span>${card.price}</span>
-                        </button>`
-                    }
+                    <button class="card-price${isPurchased ? ' purchased' : ''}" data-id="${card.id}" data-rate="${card.perHour}"${isPurchased ? ' disabled' : ''}>
+                        ${isPurchased ? 
+                            '<span>Куплено</span>' :
+                            `<img src="https://i.postimg.cc/FFx7T4Bh/image.png" alt="leaf" class="leaf-icon">
+                            <span>${card.price}</span>`
+                        }
+                    </button>
                     <div class="per-hour">
                         <div class="rate">
                             <img src="https://i.postimg.cc/FFx7T4Bh/image.png" alt="leaf" class="leaf-icon">
@@ -287,24 +418,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
 
-            if (!isOwned) {
+            if (!isPurchased && !isOwned) {
                 const buyButton = cardElement.querySelector('.card-price');
                 buyButton.addEventListener('click', function() {
-                    const cardId = this.dataset.id;
-                    const hourlyRate = parseInt(this.dataset.rate);
+                    const cardId = parseInt(this.dataset.id);
+                    const price = parseInt(this.querySelector('span').textContent);
                     
-                    if (!this.classList.contains('purchased')) {
-                        this.classList.add('purchased');
-                        this.innerHTML = '<span>Куплено</span>';
+                    if (!this.classList.contains('purchased') && clickCount >= price) {
+                        clickCount = Number(clickCount) - Number(price);
+                        balanceElement.textContent = Math.floor(clickCount);
                         
-                        window.totalHourlyRate += hourlyRate;
-                        const rateElement = document.querySelector('.user-info .rate');
-                        rateElement.textContent = `${window.totalHourlyRate}/hour`;
+                        // Запускаем анимацию конфетти
+                        createConfetti();
+                        
+                        this.classList.add('purchased');
+                        this.disabled = true;
+                        this.innerHTML = '<span>Куплено</span>';
 
                         // Добавляем карту в купленные
-                        window.purchasedCards.push(card);
-                        updateOwnedCards();
-                        handleCardPurchase(card);
+                        const cardData = cardsData.find(c => c.id === cardId);
+                        if (cardData && !window.purchasedCards.some(pc => pc.id === cardId)) {
+                            window.purchasedCards.push(cardData);
+                            updateOwnedCards();
+                            handleCardPurchase(cardData);
+                            // Обновляем общую прибыль в час
+                            updateTotalHourlyRate();
+                        }
+                    } else if (clickCount < price) {
+                        showNotification('Недостаточно средств для покупки!');
                     }
                 });
             }
@@ -315,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Функция обновления списка купленных карт
         function updateOwnedCards() {
             ownedCardsContainer.innerHTML = '';
-            if (window.purchasedCards.length === 0) {
+            if (!window.purchasedCards || window.purchasedCards.length === 0) {
                 const emptyMessage = document.createElement('div');
                 emptyMessage.className = 'empty-message';
                 emptyMessage.textContent = 'У вас пока нет купленных карт';

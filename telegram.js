@@ -13,6 +13,7 @@ class TelegramAuth {
         this.purchasedItems = [];
         this.balance = 0;
         this.energy = 100;
+        this.hourlyRate = 10;
         this.initTelegramAuth();
     }
 
@@ -44,52 +45,63 @@ class TelegramAuth {
             if (usernameElement) {
                 usernameElement.textContent = this.username;
             }
-
-            // Сохраняем данные в localStorage
-            this.saveUserData();
             
             console.log('[Telegram.WebApp] User authenticated:', this.username);
         }
     }
 
     saveUserData() {
+        if (!this.isAuthenticated) return;
+        
         const userData = {
             username: this.username,
             telegramId: this.telegramId,
-            purchasedItems: this.purchasedItems,
-            balance: this.balance,
-            energy: this.energy
+            purchasedItems: window.purchasedCards || [],
+            balance: window.clickCount || 0,
+            energy: window.energy || 100,
+            hourlyRate: window.totalHourlyRate || 10
         };
         localStorage.setItem(`userData_${this.telegramId}`, JSON.stringify(userData));
+        console.log('[Telegram.WebApp] Data saved:', userData);
     }
 
     loadUserData() {
+        if (!this.isAuthenticated) return null;
+        
         const userData = localStorage.getItem(`userData_${this.telegramId}`);
         if (userData) {
             const data = JSON.parse(userData);
             this.purchasedItems = data.purchasedItems || [];
-            this.balance = data.balance || 0;
-            this.energy = data.energy || 100;
+            this.balance = Number(data.balance) || 0;
+            this.energy = Number(data.energy) || 100;
+            this.hourlyRate = Number(data.hourlyRate) || 10;
+            
+            // Синхронизируем с глобальным состоянием
             window.purchasedCards = this.purchasedItems;
+            window.totalHourlyRate = this.hourlyRate;
+            window.clickCount = this.balance;
             
-            // Обновляем значения на странице
-            const balanceElement = document.querySelector('.balance');
-            const progressText = document.querySelector('.progress-text');
-            const progressBar = document.querySelector('.progress');
-            
-            if (balanceElement) balanceElement.textContent = Math.floor(this.balance);
-            if (progressText) progressText.textContent = `${Math.floor(this.energy)}/100`;
-            if (progressBar) progressBar.style.width = `${this.energy}%`;
+            console.log('[Telegram.WebApp] Data loaded:', data);
+            return data;
         }
+        return null;
     }
 
     addPurchasedItem(item) {
-        this.purchasedItems.push(item);
-        this.saveUserData();
+        if (!this.isAuthenticated) return;
+        
+        // Проверяем, нет ли уже такой карточки
+        if (!this.purchasedItems.some(card => card.id === item.id)) {
+            this.purchasedItems.push(item);
+            window.purchasedCards = this.purchasedItems;
+            this.saveUserData();
+            console.log('[Telegram.WebApp] Item purchased:', item);
+        }
     }
 
     saveBalance(balance) {
-        this.balance = balance;
+        this.balance = Number(balance);
+        window.clickCount = this.balance; // Сохраняем в глобальную переменную
         this.saveUserData();
     }
 
