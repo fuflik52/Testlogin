@@ -3,7 +3,7 @@ class GitHubDB {
         this.owner = 'fuflik52';
         this.repo = 'Testlogin';
         this.branch = 'main';
-        this.token = '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';
+        this.token = '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';
         this.basePath = 'data';
     }
 
@@ -54,8 +54,9 @@ class GitHubDB {
         try {
             const response = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.basePath}/users.json`, {
                 headers: {
-                    'Authorization': `token ${this.token}`,
-                    'Accept': 'application/vnd.github.v3+json'
+                    'Authorization': `Bearer ${this.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'X-GitHub-Api-Version': '2022-11-28'
                 }
             });
 
@@ -88,8 +89,9 @@ class GitHubDB {
         await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.basePath}/users.json`, {
             method: 'PUT',
             headers: {
-                'Authorization': `token ${this.token}`,
+                'Authorization': `Bearer ${this.token}`,
                 'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -107,8 +109,9 @@ class GitHubDB {
                 `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.basePath}/users.json`,
                 {
                     headers: {
-                        'Authorization': `token ${this.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
+                        'Authorization': `Bearer ${this.token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'X-GitHub-Api-Version': '2022-11-28'
                     }
                 }
             ).then(res => res.json());
@@ -122,8 +125,9 @@ class GitHubDB {
                 {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${this.token}`,
+                        'Authorization': `Bearer ${this.token}`,
                         'Accept': 'application/vnd.github.v3+json',
+                        'X-GitHub-Api-Version': '2022-11-28',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
