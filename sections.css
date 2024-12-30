@@ -90,22 +90,25 @@
 }
 
 .cards-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
+    display: none;
 }
 
-.empty-message {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
-    padding: 20px;
-    font-size: 14px;
+.cards-container::-webkit-scrollbar-thumb {
+    background-color: #363636;
+    border-radius: 4px;
+}
+
+.cards-container::-webkit-scrollbar-track {
+    background-color: transparent;
 }
 
 .card-item {
+    position: relative;
     background-color: #1A1B1A;
     border-radius: 12px;
     padding: 8px;
-    position: relative;
+    width: calc(100% - 4px); /* Добавляем 4px к ширине */
+    margin: 0 2px; /* Центрируем карточку */
 }
 
 .card-image {
@@ -126,6 +129,14 @@
     border-radius: 12px;
 }
 
+.empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 20px;
+    font-size: 14px;
+}
+
 .card-title {
     color: white;
     margin-bottom: 4px;
@@ -136,7 +147,7 @@
 
 .card-description {
     color: rgba(255, 255, 255, 0.5);
-    font-size: 9px;
+    font-size: 15px;
     margin-bottom: 8px;
 }
 
@@ -219,6 +230,16 @@
     font-size: 12px;
     font-weight: bold;
     z-index: 1;
+}
+
+@media (min-width: 640px) {
+    .cards-container {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    }
+    
+    .card-item {
+        min-width: 320px;
+    }
 }
 
 /* Стили для других секций */

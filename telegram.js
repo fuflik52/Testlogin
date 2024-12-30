@@ -159,7 +159,22 @@ class TelegramAuth {
 // Создаем и экспортируем экземпляр класса
 window.telegramAuth = new TelegramAuth();
 
-// Инициализация при загрузке страницы
+// Функция для вибрации на мобильных устройствах
+function vibrate(duration = 20) {
+    if (navigator.vibrate) {
+        navigator.vibrate(duration);
+    }
+}
+
+// Добавляем вибрацию на все кликабельные элементы
 document.addEventListener('DOMContentLoaded', () => {
     window.telegramAuth.checkExistingAuth();
+    
+    const clickableElements = document.querySelectorAll('button, .card-item, .nav-item, .main-circle');
+    
+    clickableElements.forEach(element => {
+        element.addEventListener('click', () => {
+            vibrate();
+        });
+    });
 });
